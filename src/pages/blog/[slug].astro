@@ -1,0 +1,90 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Takeaways from '@/components/blog/Takeaways.astro';
+import { publishedPosts, postPath, publishedRegistry } from '@/lib/content';
+import { article } from '@/lib/schema';
+import { fillPrices } from '@/data/pricing';
+import { site, isSet } from '@/config/site';
+
+export async function getStaticPaths() {
+  return (await publishedPosts()).map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const d = post.data;
+const path = postPath(post);
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const registry = await publishedRegistry();
+const others = (await publishedPosts()).filter((p) => p.id !== post.id);
+const related = [...others.filter((p) => p.data.category === d.category), ...others.filter((p) => p.data.category !== d.category)].slice(0, 3);
+const fmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const description = fillPrices(d.description);
+---
+
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  path={path}
+  ogType="article"
+  updated={d.updated}
+  breadcrumbs={[{ name: 'Blog', path: '/blog/' }, { name: d.h1, path }]}
+  schema={[article({ headline: d.h1, description, path, published: d.published, updated: d.updated, author: d.author })]}
+>
+  <div class="read-progress" aria-hidden="true"></div>
+  <article class="container-x grid gap-12 pb-16 pt-10 lg:grid-cols-[minmax(0,1fr)_17rem]">
+    <div>
+      <p class="eyebrow">{d.category}</p>
+      <h1 class="mt-5 text-h1">{d.h1}</h1>
+      <p class="mt-4 text-sm text-ink-3">
+        By {isSet(d.author) ? d.author : `the ${site.brand} team`} · {d.readingTime && `${d.readingTime} read · `}Published <time datetime={d.published.toISOString()}>{fmt.format(d.published)}</time> · Updated <time datetime={d.updated.toISOString()}>{fmt.format(d.updated)}</time>
+      </p>
+      <p class="mt-8 rounded-2xl bg-card p-6 text-lead shadow-[var(--shadow-card)] ring-1 ring-line" data-speakable><strong class="font-display">Short answer: </strong>{fillPrices(d.answer)}</p>
+      {d.takeaways.length > 0 && <Takeaways items={d.takeaways.map(fillPrices)} />}
+      <div class="prose prose-lg prose-works mt-10 max-w-3xl"><Content /></div>
+      <aside class="card mt-12 flex gap-5 p-6" aria-label="About the author">
+        <div class="grid size-14 shrink-0 place-items-center rounded-full bg-ink font-display text-lg text-paper" aria-hidden="true">W</div>
+        <div>
+          <p class="font-semibold">{isSet(d.author) ? d.author : `The ${site.brand} team`}</p>
+          <p class="text-ink-2">Works AI designs, builds and launches SaaS platforms, AI web apps and websites for UK businesses, for one-time fixed prices. We write about what we build.</p>
+        </div>
+      </aside>
+      <p class="mt-10 text-ink-2">
+        {registry.has(d.service) && <>Related service: <a href={d.service} class="link font-semibold">{registry.get(d.service)}</a>. </>}
+        {registry.has(d.problemPage) && <>Guide: <a href={d.problemPage} class="link font-semibold">{registry.get(d.problemPage)}</a>.</>}
+      </p>
+    </div>
+    <aside class="hidden lg:block">
+      {
+        toc.length > 3 && (
+          <nav aria-label="Contents" class="sticky top-28">
+            <p class="eyebrow">Contents</p>
+            <ol class="mt-4 grid gap-2 border-l border-line text-sm">
+              {toc.map((h) => <li><a href={`#${h.slug}`} class="-ml-px block border-l border-transparent py-1 pl-4 text-ink-2 hover:border-signal hover:text-ink">{h.text}</a></li>)}
+            </ol>
+          </nav>
+        )
+      }
+    </aside>
+  </article>
+  {
+    related.length > 0 && (
+      <section class="container-x pb-10" aria-labelledby="related-posts">
+        <h2 id="related-posts" class="text-h2">Keep reading</h2>
+        <ul class="mt-6 grid gap-5 md:grid-cols-3">
+          {related.map((p) => (
+            <li>
+              <a href={postPath(p)} class="card card-link flex h-full flex-col p-6">
+                <span class="eyebrow">{p.data.category}</span>
+                <span class="mt-2 font-display text-lg font-semibold leading-snug">{p.data.h1}</span>
+                <span class="mt-2 flex-1 text-sm text-ink-2">{fillPrices(p.data.answer)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+  <CtaBand />
+</BaseLayout>

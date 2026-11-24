@@ -1,0 +1,32 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+const suggestions = [
+  ['/services/', 'AI services', 'Assistants, AI receptionists and local SEO'],
+  ['/business/', 'Business solutions', 'Websites, booking and invoice reminders'],
+  ['/pricing/', 'Pricing', 'Every price on one page'],
+  ['/free-seo-check/', 'Free website & SEO check', 'A short report within 2 working days'],
+  ['/ai-shop/training/', 'Courses', 'Learn to set it up yourself'],
+  ['/contact/', 'Contact', 'Talk to a person'],
+];
+---
+
+<BaseLayout title="Page Not Found | Works AI" description="Sorry, we couldn't find that page. Try our services, pricing or free website and SEO check, or book a free 30-minute AI audit with the Works AI team." path="/404/" noindex>
+  <section class="container-x max-w-[56rem] py-20 sm:py-28">
+    <p class="font-mono text-sm text-signal-deep">Error 404</p>
+    <h1 class="mt-4 text-h1">We couldn't find that page</h1>
+    <p class="mt-5 text-lead text-ink-2">The link may be old, or the address mistyped. Were you looking for one of these?</p>
+    <ul class="mt-10 grid gap-4 sm:grid-cols-2">
+      {
+        suggestions.map(([href, t, d]) => (
+          <li>
+            <a href={href} class="card card-link block p-5">
+              <span class="block font-display text-lg font-semibold">{t}</span>
+              <span class="block text-ink-3">{d}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-10"><a href="/" class="btn btn-secondary">Back to the home page</a></p>
+  </section>
+</BaseLayout>

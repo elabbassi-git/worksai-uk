@@ -1,0 +1,84 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import Faq from '@/components/Faq.astro';
+import LeadForm from '@/components/LeadForm.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { faqPage } from '@/lib/schema';
+
+const path = '/free-seo-check/';
+const faq = [
+  { q: 'Is this an automatic score?', a: 'No. A person on our team looks at your website and your Google presence and writes the report. That is why it takes up to 2 working days.' },
+  { q: 'What will the report cover?', a: 'Speed on mobile, page titles and descriptions, how clearly your services are described, your Google Business Profile, reviews, and the three changes we would make first.' },
+  { q: 'I don’t have a website. Can I still use this?', a: 'Yes. Tick “I don’t have a website yet” and we will send you a free homepage mock-up idea instead, showing what a simple site for your business could look like.' },
+  { q: 'Will you add me to a mailing list?', a: 'Only if you tick the optional box. Otherwise we use your details just to send the report and answer any questions.' },
+];
+---
+
+<BaseLayout
+  title="Free Website SEO Check for UK Businesses | Works AI"
+  description="Get a free website and SEO check, prepared by a person, not a robot. We email a short, plain-English report within 2 working days. Or book a free AI audit."
+  path={path}
+  breadcrumbs={[{ name: 'Free website & SEO check', path }]}
+  schema={[faqPage(faq)]}
+  whatsappMessage="Hello Works AI, I'd like a free website and SEO check."
+>
+  <section class="container-x grid gap-12 pb-16 pt-10 sm:pt-14 lg:grid-cols-[1fr_1.15fr] lg:items-start">
+    <div>
+      <p class="eyebrow reveal">Free · prepared by a person · 2 working days</p>
+      <h1 class="mt-5 text-h1">Get a free website & SEO check</h1>
+      <p class="reveal reveal-2 mt-6 text-lead text-ink-2">
+        Send us your website address. We look at it ourselves, check how you show up on Google, and email you a short, plain-English report with the three things we would fix first.
+      </p>
+      <h2 class="mt-10 font-display text-h3 font-semibold">What we check</h2>
+      <ul class="mt-4 grid gap-3 text-ink-2">
+        {
+          [
+            'How fast your site loads on a phone',
+            'Page titles and descriptions Google shows in results',
+            'Whether each service has a clear, findable page',
+            'Your Google Business Profile and reviews',
+            'Contact options: can people call, message or book easily?',
+          ].map((x) => (
+            <li class="flex gap-3">
+              <svg class="mt-1 shrink-0 text-moss" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+              {x}
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-8 rounded-2xl border border-line bg-card p-5 text-ink-2">
+        <strong class="text-ink">No website yet?</strong> Tick the box in the form and we will send you a free homepage mock-up idea instead.
+      </p>
+    </div>
+    <LeadForm variant="seo-check" />
+  </section>
+
+  <Section id="next" eyebrow="While you wait" title="Guides that might help" tone="alt">
+    <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          ['/small-business-website/', 'No website yet?', 'What a small business website needs and costs.'],
+          ['/website-redesign/', 'Old or slow website?', 'How to tell if you need a fix or a rebuild.'],
+          ['/seo-for-small-business/', 'SEO for small business', 'The three things that matter most.'],
+          ['/get-found-on-google/', 'Get found on Google', 'Step-by-step, starting from zero.'],
+        ].map(([href, t, d]) => (
+          <li>
+            <a href={href} class="card card-link flex h-full flex-col p-6">
+              <h3 class="font-display text-lg font-semibold">{t}</h3>
+              <p class="mt-2 text-ink-2">{d}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-8 text-ink-2">
+      Ready for more than a check? See <a href="/business/website-design-seo/" class="link">website design and SEO</a>, <a href="/services/local-seo/" class="link">local SEO and Google Maps</a> or <a href="/services/ai-agents/" class="link">AI agents that answer enquiries</a>.
+    </p>
+  </Section>
+
+  <Section id="faq" eyebrow="FAQ" title="About the free check" narrow>
+    <Faq items={faq} />
+  </Section>
+  <CtaBand />
+</BaseLayout>

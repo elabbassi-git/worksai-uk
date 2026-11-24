@@ -1,0 +1,26 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { Crumb } from '@/lib/schema';
+interface Props {
+  title: string;
+  description: string;
+  h1: string;
+  path: string;
+  updated?: Date;
+  legalReview?: boolean;
+  breadcrumbs?: Crumb[];
+}
+const { title, description, h1, path, updated, legalReview = false, breadcrumbs } = Astro.props;
+const fmt = updated ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(updated) : null;
+---
+
+<BaseLayout title={title} description={description} path={path} breadcrumbs={breadcrumbs ?? [{ name: h1, path }]} updated={updated}>
+  <div class="container-x max-w-[52rem] pb-24 pt-10">
+    <h1 class="text-h1">{h1}</h1>
+    {fmt && <p class="mt-4 text-sm text-ink-3">Last updated {fmt}</p>}
+    {legalReview && <p class="mt-6 rounded-xl border border-signal/40 bg-signal-soft/50 p-4 text-sm">Draft for legal review. Not yet approved.</p>}
+    <div class="prose prose-lg prose-works mt-10 max-w-none">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

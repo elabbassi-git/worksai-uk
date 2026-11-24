@@ -1,0 +1,178 @@
+---
+import Logo from './Logo.astro';
+import { publishedServices } from '@/lib/content';
+
+interface Props {
+  path: string;
+}
+const { path } = Astro.props;
+const services = await publishedServices();
+
+type Item = { label: string; href: string; blurb: string; child?: boolean };
+const toItem = (s: (typeof services)[number]): Item => ({
+  label: s.data.navLabel,
+  href: s.data.path,
+  blurb: s.data.navBlurb,
+  child: !!s.data.parent,
+});
+
+const groups: { label: string; href: string; intro: string; items: Item[] }[] = [
+  {
+    label: 'Services',
+    href: '/services/',
+    intro: 'AI agents, local SEO and custom AI builds.',
+    items: services.filter((s) => s.data.group === 'services').map(toItem),
+  },
+  {
+    label: 'Business Solutions',
+    href: '/business/',
+    intro: 'Websites, bookings, invoicing and the tools that run your week.',
+    items: services.filter((s) => s.data.group === 'business').map(toItem),
+  },
+  {
+    label: 'AI Shop',
+    href: '/ai-shop/',
+    intro: 'Courses and workshops to learn it yourself. Paid once.',
+    items: [
+      { label: 'AI Training & Coaching', href: '/ai-shop/training/', blurb: 'Courses and workshops, one-time payment.' },
+    ],
+  },
+];
+
+const active = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<header class="sticky top-0 z-50 border-b border-line/80 bg-paper/90 backdrop-blur-md supports-[backdrop-filter]:bg-paper/80">
+  <div class="container-x flex h-[4.25rem] items-center justify-between gap-3 xl:gap-6">
+    <a href="/" class="rounded-lg" aria-label="Works AI home"><Logo animated /></a>
+
+    <nav aria-label="Main" class="hidden lg:block">
+      <ul class="flex items-center gap-0.5">
+        <li>
+          <a
+            href="/"
+            class:list={['inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-2 text-[0.88rem] font-medium xl:px-2.5 xl:text-[0.93rem] hover:bg-paper-2', path === '/' && 'bg-paper-2']}
+            aria-current={path === '/' ? 'page' : undefined}>Home</a
+          >
+        </li>
+        {
+          groups.map((g) => (
+            <li class="group relative">
+              <a
+                href={g.href}
+                class:list={[
+                  'inline-flex min-h-11 items-center gap-1 whitespace-nowrap rounded-full px-2 text-[0.88rem] font-medium xl:gap-1.5 xl:px-2.5 xl:text-[0.93rem] transition-colors hover:bg-paper-2',
+                  active(g.href) && 'bg-paper-2',
+                ]}
+                aria-current={path === g.href ? 'page' : undefined}
+              >
+                {g.label}
+                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" class="opacity-60 transition-transform group-hover:rotate-180 group-focus-within:rotate-180">
+                  <path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </a>
+              <div class="invisible absolute left-1/2 top-full z-50 w-[23rem] -translate-x-1/2 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                <div class="card overflow-hidden p-2">
+                  <p class="px-3 pb-2 pt-2 text-sm text-ink-3">{g.intro}</p>
+                  <ul>
+                    {g.items.map((i) => (
+                      <li>
+                        <a
+                          href={i.href}
+                          class:list={['block rounded-xl px-3 py-2.5 hover:bg-paper', i.child && 'ml-4 border-l border-line pl-4']}
+                          aria-current={path === i.href ? 'page' : undefined}
+                        >
+                          <span class="block font-semibold leading-snug">{i.label}</span>
+                          <span class="block text-sm leading-snug text-ink-3">{i.blurb}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href="/pricing/"
+            class:list={['inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-2 text-[0.88rem] font-medium xl:px-2.5 xl:text-[0.93rem] hover:bg-paper-2', active('/pricing/') && 'bg-paper-2']}
+            aria-current={path === '/pricing/' ? 'page' : undefined}>Pricing</a
+          >
+        </li>
+        <li>
+          <a
+            href="/blog/"
+            class:list={['inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-2 text-[0.88rem] font-medium xl:px-2.5 xl:text-[0.93rem] hover:bg-paper-2', active('/blog/') && 'bg-paper-2']}
+            aria-current={path === '/blog/' ? 'page' : undefined}>Blog</a
+          >
+        </li>
+        <li class="hidden xl:block">
+          <a
+            href="/faq/"
+            class:list={['inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-2 text-[0.88rem] font-medium xl:px-2.5 xl:text-[0.93rem] hover:bg-paper-2', active('/faq/') && 'bg-paper-2']}
+            aria-current={path === '/faq/' ? 'page' : undefined}>FAQ</a
+          >
+        </li>
+        <li>
+          <a
+            href="/contact/"
+            class:list={['inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-2 text-[0.88rem] font-medium xl:px-2.5 xl:text-[0.93rem] hover:bg-paper-2', active('/contact/') && 'bg-paper-2']}
+            aria-current={path === '/contact/' ? 'page' : undefined}>Contact us</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href="/free-ai-audit/" data-event="audit_booking_click" class="btn btn-primary !min-h-11 whitespace-nowrap !px-3 !py-2.5 text-[0.9rem] min-[360px]:!px-4 min-[360px]:text-[0.95rem]"
+        ><span class="sm:hidden lg:inline xl:hidden">Free AI audit</span><span class="hidden sm:inline lg:hidden xl:inline">Book a free AI audit</span></a
+      >
+
+      <details class="mobile-menu lg:hidden">
+        <summary class="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 font-medium ring-1 ring-ink/80 sm:px-4" aria-label="Open menu">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" stroke-width="1.6" /></svg>
+          <span class="hidden sm:inline">Menu</span>
+        </summary>
+        <div class="absolute inset-x-0 top-[4.25rem] max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-b border-line bg-paper shadow-[var(--shadow-lift)]">
+          <nav aria-label="Mobile" class="container-x py-5">
+            <a href="/" class="flex min-h-11 items-center font-display text-xl font-semibold">Home</a>
+            {
+              groups.map((g) => (
+                <div class="rule py-4 first:border-0">
+                  <a href={g.href} class="font-display text-xl font-semibold">
+                    {g.label}
+                  </a>
+                  <ul class="mt-2 grid gap-0.5">
+                    {g.items.map((i) => (
+                      <li>
+                        <a href={i.href} class:list={['flex min-h-11 items-center rounded-lg text-ink-2', i.child && 'pl-4']}>
+                          {i.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+            <div class="rule grid gap-3 pt-5">
+              <a href="/pricing/" class="font-display text-xl font-semibold">Pricing</a>
+              <a href="/blog/" class="font-display text-xl font-semibold">Blog</a>
+              <a href="/faq/" class="font-display text-xl font-semibold">FAQ</a>
+              <a href="/contact/" class="font-display text-xl font-semibold">Contact us</a>
+              <a href="/free-ai-audit/" data-event="audit_booking_click" class="btn btn-primary mt-2">Book a free 30-minute AI audit</a>
+              <a href="/free-seo-check/" class="btn btn-secondary">Get a free website & SEO check</a>
+            </div>
+          </nav>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .mobile-menu[open] summary {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+</style>

@@ -1,0 +1,149 @@
+---
+title: "Custom SaaS Development UK: A Practical Guide | Works AI"
+description: "How custom SaaS development works in the UK: scoping, architecture, multi-tenancy, security, timelines and avoiding lock-in. From a one-time-price SaaS studio."
+h1: "Custom SaaS development in the UK: a practical guide"
+answer: "Custom SaaS development means designing and building your own subscription-ready software platform, with accounts, roles, payments and admin, rather than renting an off-the-shelf tool. Done well, it starts with a tight first release, is built on proven technology, and leaves you owning the code."
+category: How-to
+draft: false
+featured: true
+published: 2026-11-24
+updated: 2026-11-24
+readingTime: 9-minute
+service: /services/saas-development/
+problemPage: /website-redesign/
+keyword: "custom SaaS development UK"
+takeaways:
+  - "Scope a small first release around one core job, not every feature you can imagine."
+  - "Multi-tenancy, roles and security belong in the foundations, not as add-ons later."
+  - "Insist on owning the code, the cloud accounts and the documentation from day one."
+  - "A fixed, one-time price for a clearly scoped release protects you from open-ended bills."
+---
+
+import Callout from '@/components/blog/Callout.astro';
+import Flow from '@/components/blog/Flow.astro';
+import Compare from '@/components/blog/Compare.astro';
+import Checklist from '@/components/blog/Checklist.astro';
+import PriceCard from '@/components/blog/PriceCard.astro';
+
+## What "custom SaaS development" actually means
+
+SaaS stands for software as a service: software your customers use in a browser, usually by signing in to their own account. **Custom** SaaS development means building that platform specifically for your product or business, instead of configuring a general tool.
+
+In practice, a production SaaS platform is more than the feature your customers pay for. Underneath it sits a layer of plumbing that every serious product needs:
+
+- **Accounts and authentication:** sign-up, log-in, password resets, two-step verification
+- **Organisations and roles:** a customer can invite colleagues, each with the right permissions
+- **Multi-tenancy:** every customer's data is kept separate from everyone else's
+- **Payments:** checkout, invoices and receipts, usually through a provider such as Stripe
+- **Admin:** a back office for your team to support customers and see what is happening
+- **Email, notifications and audit logs:** so users know what happened, and you can prove it
+
+A prototype skips most of this. A platform you can sell cannot.
+
+<Callout type="key" title="Platform first, features second">
+  Most failed SaaS builds don't fail on the clever feature. They fail on the plumbing: permissions leaking between customers, payments that don't reconcile, or a database nobody can change safely. Get the foundations right and features become cheap to add.
+</Callout>
+
+## When custom SaaS makes sense (and when it doesn't)
+
+Building your own platform is a serious investment. It is the right call when:
+
+- you are launching a **software product** that customers will pay to use
+- your business runs on a process **no off-the-shelf tool fits** without painful workarounds
+- you are paying for **several tools per user** and still copying data between them
+- you need to give **your own customers** a branded portal to log in, track work and pay
+
+It is usually the wrong call when an existing tool already does 90% of what you need. Then a good set-up, or a small integration, will save you time and money. A sensible studio will tell you that before quoting.
+
+<Compare
+  left="Off-the-shelf tool"
+  right="Custom SaaS platform"
+  caption="Neither option is always better. The right choice depends on how unusual your process is and whether the software is your product."
+  rows={[
+    { label: 'Time to start', left: 'Days', right: 'Weeks to months', winner: 'left' },
+    { label: 'Fits your exact process', left: 'Partly', right: 'Fully', winner: 'right' },
+    { label: 'Can be sold as your product', left: 'No', right: 'Yes', winner: 'right' },
+    { label: 'Who owns it', left: 'The vendor', right: 'You', winner: 'right' },
+    { label: 'Cost model', left: 'Per-user licences, forever', right: 'Build cost, then hosting' },
+  ]}
+/>
+
+## How a custom SaaS project runs, step by step
+
+A well-run build follows the same broad shape, whichever studio you choose:
+
+<Flow
+  caption="How we run SaaS builds at Works AI. Each sprint ends with working software on a staging site you can click through."
+  steps={[
+    { title: 'Discovery', text: 'Users, journeys and the first release agreed' },
+    { title: 'Architecture', text: 'Data model, stack and security plan' },
+    { title: 'Design', text: 'Clickable screens for every key flow' },
+    { title: 'Build sprints', text: 'Two-week cycles, demoed every time' },
+    { title: 'Harden', text: 'Tests, performance and security review' },
+    { title: 'Launch & hand over', text: 'Deployed in your name, docs included' },
+  ]}
+/>
+
+### 1. Discovery: define the first release
+
+The single most valuable thing you can do is make the first release **small and sharp**. Write down who your first users are, the one job they need done, and what "done" looks like. Everything else goes on a later list. A clear scope is also what makes a fixed price possible.
+
+### 2. Architecture: decide the foundations
+
+This is where the data model, technology stack and security approach are agreed. For most UK SaaS products, proven choices are the right ones: TypeScript, React, Node.js and PostgreSQL, with Stripe for payments and Cloudflare or AWS for hosting. Boring technology is a feature. It means any good developer can maintain your product after launch.
+
+### 3. Design: make it real before building it
+
+A clickable design of every key screen catches misunderstandings while they are cheap to fix. It is also the best way to test the product with a few real users before a line of code is written.
+
+### 4. Build in short sprints
+
+Two-week sprints, each ending with a demo on a staging site, keep everyone honest. You see real progress, give feedback early, and can re-prioritise if you learn something new.
+
+### 5. Harden and launch
+
+Before launch, the platform needs automated tests, performance checks and a security review covering access control, input validation, rate limiting, backups and error monitoring. Then it is deployed to infrastructure in **your** name.
+
+## Multi-tenancy and security: the parts you can't see
+
+If your platform serves more than one customer organisation, tenant isolation is non-negotiable. A common, robust approach is to tag every record with an organisation and enforce access in the database itself, for example with PostgreSQL row-level security, so that a bug in one screen cannot expose another customer's data.
+
+You also need to think about UK GDPR from the start: what personal data you collect, why, where it is stored, who can access it and how long you keep it. Building those rules into the platform is far easier than retrofitting them.
+
+<Checklist
+  title="Security basics every SaaS platform should launch with"
+  items={[
+    'Role-based access control with least privilege',
+    'Tenant isolation enforced at the database level',
+    'Two-step verification for admin users',
+    'Input validation and rate limiting on every API',
+    'Automated, tested backups',
+    'Error monitoring and audit logs',
+    'Secrets kept out of the code repository',
+    'A documented data retention policy',
+  ]}
+/>
+
+## Owning your platform: avoiding lock-in
+
+Ask any studio three questions before you sign:
+
+1. **Whose name are the code repository and cloud accounts in?** They should be yours from day one.
+2. **What documentation do I get at hand-over?** Enough for another developer to continue.
+3. **What do I pay after launch?** Ideally, only your own hosting and third-party services, paid directly to those providers.
+
+<Callout type="warning" title="Beware the hidden retainer">
+  Some agencies build in their own accounts and charge a monthly fee to keep your product running. That can look cheap at the start and become very expensive to leave. Make ownership part of the contract.
+</Callout>
+
+## How much does custom SaaS development cost?
+
+It depends almost entirely on scope, which is why good studios run discovery before quoting. We cover the cost drivers in detail in our guide on [how much it costs to build a SaaS platform in the UK](/blog/how-much-does-it-cost-to-build-a-saas-platform-uk/).
+
+At Works AI every build is a **one-time, fixed price** agreed after discovery, with no monthly fees from us.
+
+<PriceCard priceKey="saasPlatform" href="/services/saas-development/" cta="See how our SaaS and platform development works" />
+
+## Next steps
+
+If you have a product idea or a process that has outgrown spreadsheets, start by writing down your first users and the one job the platform must do for them. Then [book a free 30-minute AI audit](/free-ai-audit/) and we will help you shape a first release. If your current website is the bottleneck rather than your software, our guide to [fixing an old or slow website](/website-redesign/) is a better place to start.

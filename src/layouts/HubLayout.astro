@@ -1,0 +1,104 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import CtaButtons from '@/components/CtaButtons.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Faq from '@/components/Faq.astro';
+import { faqPage } from '@/lib/schema';
+import { fillPrices } from '@/data/pricing';
+
+export type HubCard = { title: string; href: string; text: string; price?: string; children?: { title: string; href: string }[] };
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  eyebrow: string;
+  h1: string;
+  answer: string;
+  cardsTitle: string;
+  cards: HubCard[];
+  faq?: { q: string; a: string }[];
+  schema?: Record<string, unknown>[];
+}
+const { title, description, path, eyebrow, h1, answer, cardsTitle, cards, faq = [], schema = [] } = Astro.props;
+const faqFilled = faq.map((f) => ({ q: fillPrices(f.q), a: fillPrices(f.a) }));
+---
+
+<BaseLayout title={title} description={description} path={path} breadcrumbs={[{ name: eyebrow, path }]} schema={[...schema, ...(faq.length ? [faqPage(faqFilled)] : [])]}>
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top_right,black,transparent_60%)]"></div>
+    <div class="container-x relative grid gap-10 pb-14 pt-10 sm:pb-20 sm:pt-14 lg:grid-cols-[1.4fr_1fr] lg:items-center lg:gap-14">
+      <div>
+        <p class="eyebrow reveal">{eyebrow}</p>
+        <h1 class="mt-5 text-h1">{h1}</h1>
+        <p class="reveal reveal-2 mt-6 text-lead text-ink-2" data-speakable>{fillPrices(answer)}</p>
+        <CtaButtons class="reveal reveal-3 mt-9" />
+      </div>
+      <nav aria-label={`${eyebrow}: jump to`} class="reveal reveal-3 card p-5 sm:p-6">
+        <p class="eyebrow">Jump to</p>
+        <ul class="mt-3 grid gap-2">
+          {cards.map((c, i) => (
+            <li>
+              <a href={c.href} class="group flex items-center gap-3 rounded-xl border border-line bg-paper px-3.5 py-3 transition-colors hover:border-ink">
+                <span class="grid size-8 shrink-0 place-items-center rounded-full bg-ink font-mono text-xs text-paper">{String(i + 1).padStart(2, '0')}</span>
+                <span class="min-w-0 flex-1">
+                  <span class="block font-semibold leading-snug">{c.title}</span>
+                  {c.price && <span class="block text-sm text-ink-3">{c.price}</span>}
+                </span>
+                <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <Section id="all" eyebrow="Choose" title={cardsTitle} tone="alt">
+    <ul class="grid gap-5 md:grid-cols-2">
+      {
+        cards.map((c) => (
+          <li class="card card-link flex flex-col p-7 sm:p-8">
+            <h2 class="font-display text-h3 font-semibold">
+              <a href={c.href} class="hover:text-signal-deep">
+                {c.title}
+              </a>
+            </h2>
+            <p class="mt-2 flex-1 text-ink-2">{c.text}</p>
+            {c.children && c.children.length > 0 && (
+              <ul class="mt-4 grid gap-1 border-l-2 border-signal/50 pl-4">
+                {c.children.map((ch) => (
+                  <li>
+                    <a href={ch.href} class="link">
+                      {ch.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-sm">
+              {c.price && <span class="font-semibold">{c.price}</span>}
+              <a href={c.href} class="link font-semibold">
+                Learn about {c.title}
+              </a>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <div class="container-x py-16 sm:py-20">
+    <slot name="wide" />
+    <div class="prose prose-lg prose-works prose-cols mt-4"><slot /></div>
+  </div>
+
+  {
+    faq.length > 0 && (
+      <Section id="faq" eyebrow="FAQ" title="Common questions" tone="alt">
+        <Faq items={faqFilled} />
+      </Section>
+    )
+  }
+  <CtaBand />
+</BaseLayout>

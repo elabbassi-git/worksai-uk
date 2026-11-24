@@ -1,0 +1,40 @@
+---
+interface Props {
+  id?: string;
+  number?: string;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  tone?: 'paper' | 'alt' | 'card';
+  class?: string;
+  narrow?: boolean;
+}
+const { id, number, eyebrow, title, intro, tone = 'paper', narrow = false, class: cls } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+---
+
+<section id={id} aria-labelledby={title ? headingId : undefined} class:list={['py-16 sm:py-24', tone === 'alt' && 'bg-paper-2/70', tone === 'card' && 'bg-card', cls]}>
+  <div class:list={['container-x', narrow && 'max-w-[56rem]']}>
+    {
+      (title || eyebrow) && (
+        <header class:list={['mb-10 grid gap-4 sm:mb-14', intro && 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end lg:gap-12']}>
+          <div>
+            {(number || eyebrow) && (
+              <p class="eyebrow mb-4 flex items-center gap-3">
+                {number && <span class="inline-grid h-7 min-w-7 place-items-center rounded-full bg-ink px-2 text-[0.72rem] text-paper">{number}</span>}
+                {eyebrow}
+              </p>
+            )}
+            {title && (
+              <h2 id={headingId} class="text-h2">
+                {title}
+              </h2>
+            )}
+          </div>
+          {intro && <p class="max-w-xl text-lead text-ink-2">{intro}</p>}
+        </header>
+      )
+    }
+    <slot />
+  </div>
+</section>

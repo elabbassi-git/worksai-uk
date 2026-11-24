@@ -1,0 +1,39 @@
+---
+import Flow from './blog/Flow.astro';
+interface Props {
+  title?: string;
+}
+const { title = 'How every Works AI project runs' } = Astro.props;
+---
+
+<div class="not-prose my-12">
+  <h2 class="font-display text-h2 font-semibold text-ink">{title}</h2>
+  <p class="mt-3 max-w-2xl text-lead text-ink-2">The same clear process for a five-page website or a multi-tenant SaaS platform. One fixed price, paid once, and everything handed over to you.</p>
+  <Flow
+    steps={[
+      { title: 'Free audit', text: '30-minute call, no obligation' },
+      { title: 'Scope & fixed price', text: 'Written proposal, one-time payment' },
+      { title: 'Design', text: 'Screens and flows you approve' },
+      { title: 'Build', text: 'Working versions you can test' },
+      { title: 'Launch', text: 'Deployed on accounts in your name' },
+      { title: 'Hand over', text: 'Code, docs and training: yours' },
+    ]}
+  />
+  <ul class="grid gap-4 md:grid-cols-3">
+    {
+      [
+        ['Pay once', 'A single fixed price agreed before work starts. No monthly fees, retainers or subscriptions.', 'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
+        ['Own everything', 'Code, accounts, domains and data are set up in your name from day one.', 'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+        ['No lock-in', 'Documented and handed over, so any developer can continue the work.', 'M8 11V7a4 4 0 1 1 8 0M5 11h14v10H5z'],
+      ].map(([t, d, icon]) => (
+        <li class="pillar card group p-6" data-reveal>
+          <span class="grid size-11 place-items-center rounded-2xl bg-signal-soft text-signal-deep transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d={icon} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+          <h3 class="mt-4 font-display text-h3 font-semibold text-ink">{t}</h3>
+          <p class="mt-2 text-ink-2">{d}</p>
+        </li>
+      ))
+    }
+  </ul>
+</div>

@@ -1,0 +1,42 @@
+---
+interface Props {
+  left: string;
+  right: string;
+  rows: { label: string; left: string; right: string; winner?: 'left' | 'right' }[];
+  caption?: string;
+}
+const { left, right, rows, caption } = Astro.props;
+---
+
+<figure class="not-prose my-10 overflow-hidden rounded-[1.4rem] border border-line bg-card shadow-[var(--shadow-card)]" data-reveal>
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[34rem] text-left text-[0.95rem]">
+      {caption && <caption class="sr-only">{caption}</caption>}
+      <thead>
+        <tr class="bg-paper-2/80">
+          <th scope="col" class="px-5 py-4 font-semibold text-ink-3">Compare</th>
+          <th scope="col" class="px-5 py-4 font-display text-lg font-semibold text-ink">{left}</th>
+          <th scope="col" class="px-5 py-4 font-display text-lg font-semibold text-ink">{right}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line">
+        {
+          rows.map((r) => (
+            <tr class="transition-colors hover:bg-paper/70">
+              <th scope="row" class="px-5 py-4 font-semibold text-ink">{r.label}</th>
+              <td class:list={['px-5 py-4 text-ink-2', r.winner === 'left' && 'font-semibold !text-moss']}>
+                {r.winner === 'left' && <span aria-hidden="true">✓ </span>}
+                {r.left}
+              </td>
+              <td class:list={['px-5 py-4 text-ink-2', r.winner === 'right' && 'font-semibold !text-moss']}>
+                {r.winner === 'right' && <span aria-hidden="true">✓ </span>}
+                {r.right}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  {caption && <figcaption class="border-t border-line px-5 py-3 text-sm text-ink-3">{caption}</figcaption>}
+</figure>

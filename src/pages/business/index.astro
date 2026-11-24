@@ -1,0 +1,39 @@
+---
+import HubLayout, { type HubCard } from '@/layouts/HubLayout.astro';
+import HowWeWork from '@/components/HowWeWork.astro';
+import { publishedServices } from '@/lib/content';
+import { priceSummary, type ServicePriceKey } from '@/data/pricing';
+
+const cards: HubCard[] = (await publishedServices())
+  .filter((s) => s.data.group === 'business')
+  .map((s) => ({ title: s.data.navLabel, href: s.data.path, text: s.data.navBlurb, price: priceSummary(s.data.priceKey as ServicePriceKey) }));
+---
+
+<HubLayout
+  title="Business Solutions for UK Small Firms | Works AI"
+  description="Websites with SEO, online booking with reminders and automated invoice chasing for UK small businesses. Websites [[price:website.build]]. Book a free 30-minute AI audit."
+  path="/business/"
+  eyebrow="Business Solutions"
+  h1="The systems that run your week, built properly"
+  answer="A website that brings in enquiries, online booking that cuts no-shows, and invoice reminders that get you paid on time. Practical systems for UK small businesses, sole traders and agencies."
+  cardsTitle="Business solutions"
+  cards={cards}
+  faq={[
+    { q: 'How quickly can it be live?', a: 'Invoice reminders and online booking are usually live within one to two weeks. Websites typically take three to five weeks, mostly spent agreeing text and photos.' },
+    { q: 'Will it work with my accounting or calendar software?', a: 'Usually, yes. We connect common UK tools such as Xero, QuickBooks, FreeAgent, Sage, Google Calendar and Outlook, and confirm your exact set-up on the free audit call.' },
+    { q: 'Do I have to buy new software?', a: 'Not usually. We prefer to connect the tools you already pay for, such as Xero, QuickBooks, Google Calendar or Outlook, and only recommend new software when it clearly saves money or time.' },
+    { q: 'Who owns what you build?', a: 'You do. Websites, automations and accounts are set up in your name wherever possible, and we hand everything over if you ever leave.' },
+    { q: 'Are there monthly fees?', a: 'No. Each solution is a one-time payment. Hosting and software run in accounts in your name and you pay providers directly, at their own rates.' },
+  ]}
+>
+  <HowWeWork slot="wide" title="How a business solution project runs" />
+  <h2>Start with the job that costs you most</h2>
+  <p>
+    If you have no website, or yours is old and slow, start with <a href="/business/website-design-seo/">website design and SEO</a>. If appointments are your business, <a href="/business/online-booking-system/">online booking with reminders</a> saves hours of messages and cuts no-shows. If cash flow is the worry, <a href="/business/automated-invoice-reminders/">automated invoice reminders</a> chase late payments for you.
+  </p>
+  <h2>Built to work together</h2>
+  <p>
+    Each solution works on its own, and better together. A website with a booking button, an <a href="/services/ai-agents/">AI agent</a> that answers questions and sends the booking link, and invoice reminders after the job: one joined-up customer journey, with less admin for you.
+  </p>
+  <p>Not sure where to begin? Read our guides on <a href="/small-business-website/">getting a small business website</a> and <a href="/website-redesign/">fixing an old or slow website</a>, or see every price on the <a href="/pricing/">pricing page</a>.</p>
+</HubLayout>

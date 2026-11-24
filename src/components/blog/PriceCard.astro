@@ -1,0 +1,23 @@
+---
+/** Live price card: reads straight from src/data/pricing.ts. */
+import { services, priceSummary, type ServicePriceKey } from '@/data/pricing';
+interface Props {
+  priceKey: ServicePriceKey;
+  href: string;
+  cta: string;
+}
+const { priceKey, href, cta } = Astro.props;
+const p = services[priceKey];
+---
+
+<a href={href} class="price-card not-prose card card-link my-10 grid gap-5 p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-7" data-reveal>
+  <div>
+    <p class="eyebrow">Works AI price · one-time payment</p>
+    <p class="mt-2 font-display text-h3 font-semibold text-ink">{p.name}</p>
+    <p class="mt-1 text-ink-2">{p.includes.slice(0, 3).join(' · ')}</p>
+  </div>
+  <div class="sm:text-right">
+    <p class="font-display text-3xl font-semibold text-ink">{priceSummary(priceKey)}</p>
+    <span class="link mt-1 inline-block text-sm font-semibold">{cta}</span>
+  </div>
+</a>

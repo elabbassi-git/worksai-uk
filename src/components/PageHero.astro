@@ -1,0 +1,53 @@
+---
+/**
+ * Centred hero with a soft glow background and a pill eyebrow (layout pattern adapted
+ * from workai.ma, kept in the Works AI light palette). Optional badge and CTA slot.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  badge?: string;
+}
+const { eyebrow, title, intro, badge } = Astro.props;
+---
+
+<section class="page-hero relative overflow-hidden">
+  <div aria-hidden="true" class="glow pointer-events-none absolute inset-0"></div>
+  <div class="container-x relative flex flex-col items-center pb-14 pt-12 text-center sm:pb-20 sm:pt-16">
+    <p class="reveal inline-flex items-center gap-2 rounded-full border border-line bg-card/80 px-4 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.12em] text-ink-2 shadow-[var(--shadow-card)]">
+      <span class="size-1.5 rounded-full bg-signal" aria-hidden="true"></span>
+      {eyebrow}
+    </p>
+    <h1 class="mt-6 max-w-4xl text-h1">{title}</h1>
+    {intro && <p class="reveal reveal-2 mt-6 max-w-2xl text-lead text-ink-2" data-speakable>{intro}</p>}
+    {
+      badge && (
+        <p class="reveal reveal-3 mt-7 inline-flex items-center gap-2 rounded-full bg-moss-soft px-4 py-2 text-sm font-semibold text-moss">
+          <span class="live size-2 rounded-full bg-moss" aria-hidden="true" />
+          {badge}
+        </p>
+      )
+    }
+    <div class="reveal reveal-3 flex w-full flex-col items-center empty:hidden"><slot /></div>
+  </div>
+</section>
+
+<style>
+  .glow {
+    background:
+      radial-gradient(42rem 22rem at 18% 0%, rgb(236 91 42 / 0.16), transparent 70%),
+      radial-gradient(40rem 24rem at 85% 10%, rgb(29 74 57 / 0.14), transparent 70%),
+      radial-gradient(30rem 16rem at 50% 100%, rgb(236 91 42 / 0.06), transparent 70%);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .live {
+      animation: live 1.6s ease-in-out infinite;
+    }
+  }
+  @keyframes live {
+    50% {
+      opacity: 0.3;
+    }
+  }
+</style>

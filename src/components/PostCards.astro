@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { postPath } from '@/lib/content';
+import { fillPrices } from '@/data/pricing';
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+const { posts } = Astro.props;
+const fmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+  {
+    posts.map((p) => (
+      <li data-category={p.data.category} class="post-card">
+        <a href={postPath(p)} class="card card-link group flex h-full flex-col overflow-hidden">
+          <div class="post-art relative h-28 overflow-hidden border-b border-line bg-paper-2" aria-hidden="true">
+            <span class="absolute -right-6 -top-10 size-36 rounded-full bg-signal/25 blur-xl transition-transform duration-500 group-hover:scale-125" />
+            <span class="absolute bottom-4 left-5 flex gap-1.5">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <i class="block w-2 rounded-sm bg-ink/80 transition-all duration-500 group-hover:bg-signal-deep" style={`height:${[18, 30, 24, 40, 34][i]}px`} />
+              ))}
+            </span>
+            <span class="absolute right-5 top-4 rounded-full bg-card px-2.5 py-1 text-xs font-semibold ring-1 ring-line">{p.data.category}</span>
+          </div>
+          <div class="flex flex-1 flex-col p-6">
+            <h3 class="font-display text-h3 font-semibold leading-snug">{p.data.h1}</h3>
+            <p class="mt-2 flex-1 text-ink-2">{fillPrices(p.data.answer).slice(0, 170).replace(/\s\S*$/, '')}…</p>
+            <p class="mt-5 flex items-center justify-between border-t border-line pt-4 text-sm text-ink-3">
+              <time datetime={p.data.published.toISOString()}>{fmt.format(p.data.published)}</time>
+              {p.data.readingTime && <span>{p.data.readingTime} read</span>}
+            </p>
+          </div>
+        </a>
+      </li>
+    ))
+  }
+</ul>

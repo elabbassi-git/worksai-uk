@@ -1,0 +1,420 @@
+---
+/**
+ * Scenario Player: an animated, illustrative mockup that "plays" a service example
+ * step by step (phone call, chat, or back-office activity feed).
+ * - No JS: every line is visible (readable + indexable).
+ * - JS: lines appear in sequence when the player scrolls into view, with typing
+ *   indicators, a live timer and waveform for calls, and a replay button.
+ * - prefers-reduced-motion: shows everything at once.
+ */
+import { fillPrices } from '@/data/pricing';
+
+export type ScenarioLine = { from: 'customer' | 'ai' | 'system' | 'you'; text: string; meta?: string };
+export type Scenario = {
+  kind: 'call' | 'chat' | 'feed';
+  title: string;
+  context: string;
+  business: string;
+  channel?: string;
+  lines: ScenarioLine[];
+  outcome: { title: string; items: string[] };
+};
+interface Props {
+  scenario: Scenario;
+  id: string;
+}
+const { scenario: s, id } = Astro.props;
+const initials = s.business
+  .split(/\s+/)
+  .slice(0, 2)
+  .map((w) => w[0])
+  .join('')
+  .toUpperCase();
+const header = { call: 'Incoming call', chat: s.channel ?? 'WhatsApp', feed: 'Activity' }[s.kind];
+---
+
+<div class="scenario grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center" data-scenario id={id} data-kind={s.kind}>
+  <!-- Device mockup -->
+  <div class="relative mx-auto w-full max-w-[26rem]">
+    <div aria-hidden="true" class="absolute -inset-8 -z-10 rounded-[3rem] bg-gradient-to-br from-signal/25 via-paper-2 to-moss/25 blur-2xl"></div>
+    <div class:list={['device overflow-hidden border border-ink/10 shadow-[0_50px_90px_-45px_rgb(21_23_28/0.6)]', s.kind === 'feed' ? 'rounded-[1.5rem] bg-card' : 'rounded-[2.4rem] bg-night p-2.5']}>
+      <div class:list={['overflow-hidden', s.kind === 'feed' ? '' : 'rounded-[1.9rem]', s.kind === 'call' ? 'bg-gradient-to-b from-night-2 to-night text-paper' : s.kind === 'chat' ? 'bg-[#efe7da]' : 'bg-card']}>
+        {
+          s.kind === 'call' && (
+            <div class="px-6 pb-5 pt-8 text-center">
+              <p class="text-xs uppercase tracking-[0.2em] text-paper/60">{header}</p>
+              <div class="relative mx-auto mt-5 grid size-20 place-items-center">
+                <span class="ring-pulse absolute inset-0 rounded-full bg-signal/30" aria-hidden="true" />
+                <span class="relative grid size-20 place-items-center rounded-full bg-signal font-display text-2xl font-semibold text-ink">AI</span>
+              </div>
+              <p class="mt-4 font-display text-xl font-semibold">{s.business}</p>
+              <p class="mt-1 font-mono text-sm text-paper/70">
+                <span class="live-dot mr-1.5 inline-block size-2 rounded-full bg-[#4ade80] align-middle" aria-hidden="true" />
+                Live · <span data-timer>00:00</span>
+              </p>
+              <div class="wave mx-auto mt-5 flex h-10 items-center justify-center gap-[3px]" aria-hidden="true">
+                {Array.from({ length: 28 }, (_, i) => (
+                  <span style={`--h:${20 + ((i * 37) % 70)}%; --d:${(i % 7) * 0.09}s`} />
+                ))}
+              </div>
+            </div>
+          )
+        }
+        {
+          s.kind === 'chat' && (
+            <div class="flex items-center gap-3 bg-moss px-5 py-4 text-paper">
+              <span class="grid size-10 place-items-center rounded-full bg-paper/15 font-display font-semibold" aria-hidden="true">
+                {initials}
+              </span>
+              <div class="leading-tight">
+                <p class="font-semibold">{s.business}</p>
+                <p class="text-xs text-paper/75">{header} · AI assistant</p>
+              </div>
+            </div>
+          )
+        }
+        {
+          s.kind === 'feed' && (
+            <div class="flex items-center justify-between border-b border-line px-5 py-3.5">
+              <div class="flex items-center gap-2" aria-hidden="true">
+                <span class="size-3 rounded-full bg-[#f87171]" />
+                <span class="size-3 rounded-full bg-[#fbbf24]" />
+                <span class="size-3 rounded-full bg-[#4ade80]" />
+              </div>
+              <p class="font-mono text-xs text-ink-3">{s.business} · {header}</p>
+            </div>
+          )
+        }
+
+        <ol class:list={['transcript grid content-start gap-2.5 overflow-y-auto px-4 py-5 text-[0.93rem] leading-snug', s.kind === 'call' ? 'h-[17rem] bg-night/60' : 'h-[21rem]']} data-lines aria-label="Example transcript">
+          {
+            s.lines.map((l, i) => (
+              <li class:list={['line', `from-${l.from}`, s.kind]} data-line={i}>
+                {l.meta && <span class="meta">{l.meta}</span>}
+                <span class="bubble">{fillPrices(l.text)}</span>
+              </li>
+            ))
+          }
+          <li class="typing-li hidden" aria-hidden="true" data-typing>
+            <span class="bubble inline-flex gap-1 !px-3.5 !py-3"><i></i><i></i><i></i></span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Narrative + outcome -->
+  <div>
+    <p class="eyebrow flex items-center gap-2"><span class="size-2 rounded-full bg-signal" aria-hidden="true"></span>Illustrative example, not a client result</p>
+    <h3 class="mt-3 font-display text-h2 font-semibold">{s.title}</h3>
+    <p class="mt-4 text-lead text-ink-2">{s.context}</p>
+    <div class="outcome card mt-7 p-6" data-outcome>
+      <p class="flex items-center gap-2 text-sm font-semibold text-moss">
+        <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        {s.outcome.title}
+      </p>
+      <ul class="mt-3 grid gap-2 text-ink-2">
+        {s.outcome.items.map((x) => <li class="flex gap-3"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-signal" aria-hidden="true" />{fillPrices(x)}</li>)}
+      </ul>
+    </div>
+    <button type="button" class="btn btn-secondary mt-6 hidden !min-h-11" data-replay>
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.7-4M2.5 2.5V5H5" fill="none" stroke="currentColor" stroke-width="1.7" /></svg>
+      Replay the example
+    </button>
+  </div>
+</div>
+
+<style>
+  .line {
+    display: flex;
+    flex-direction: column;
+    max-width: 88%;
+  }
+  .line .meta {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.65;
+    margin-bottom: 0.25rem;
+  }
+  .bubble {
+    padding: 0.6rem 0.85rem;
+    border-radius: 1rem;
+    box-shadow: 0 1px 0 rgb(21 23 28 / 0.08);
+  }
+  /* chat */
+  .chat.from-customer .bubble {
+    background: var(--color-card);
+    border-top-left-radius: 0.3rem;
+  }
+  .chat.from-ai,
+  .chat.from-you {
+    margin-left: auto;
+    align-items: flex-end;
+  }
+  .chat.from-ai .bubble {
+    background: #d9f2cf;
+    border-top-right-radius: 0.3rem;
+  }
+  .chat.from-you .bubble {
+    background: var(--color-moss);
+    color: var(--color-paper);
+  }
+  .from-system {
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .chat.from-system .bubble {
+    background: rgb(255 255 255 / 0.65);
+    font-size: 0.82rem;
+    color: var(--color-ink-2);
+  }
+  /* call */
+  .call.from-customer .bubble {
+    background: rgb(246 242 234 / 0.1);
+    color: var(--color-paper);
+    border-top-left-radius: 0.3rem;
+  }
+  .call.from-ai {
+    margin-left: auto;
+    align-items: flex-end;
+  }
+  .call.from-ai .bubble {
+    background: var(--color-signal);
+    color: var(--color-ink);
+    border-top-right-radius: 0.3rem;
+  }
+  .call .meta {
+    color: var(--color-paper);
+  }
+  .call.from-system .bubble,
+  .call.from-you .bubble {
+    background: var(--color-card);
+    color: var(--color-ink);
+    border: 1px solid rgb(255 255 255 / 0.2);
+  }
+  /* feed */
+  .feed {
+    max-width: 100%;
+    flex-direction: row;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .feed .meta {
+    flex: 0 0 3.6rem;
+    margin: 0.7rem 0 0;
+    color: var(--color-ink-3);
+    opacity: 1;
+  }
+  .feed .bubble {
+    flex: 1;
+    border-radius: 0.85rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+    box-shadow: none;
+    position: relative;
+    padding-left: 2.1rem;
+  }
+  .feed .bubble::before {
+    content: '';
+    position: absolute;
+    left: 0.85rem;
+    top: 0.95rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--dot, var(--color-ink-3));
+  }
+  .feed.from-ai {
+    --dot: var(--color-signal);
+  }
+  .feed.from-you {
+    --dot: var(--color-moss);
+  }
+  .feed.from-customer {
+    --dot: #3b82f6;
+  }
+  .feed.from-ai .bubble {
+    background: color-mix(in oklab, var(--color-signal-soft) 45%, var(--color-card));
+  }
+  .typing-li .bubble {
+    background: var(--color-card);
+  }
+  .typing-li i {
+    width: 6px;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--color-ink-3);
+    animation: dot 1.1s infinite ease-in-out;
+  }
+  .typing-li i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .typing-li i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes dot {
+    0%,
+    60%,
+    100% {
+      opacity: 0.25;
+      transform: none;
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+  [data-scenario].is-playing .line:not(.is-shown) {
+    display: none;
+  }
+  [data-scenario].is-playing .line.is-shown {
+    animation: line-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes line-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.97);
+    }
+  }
+  [data-scenario].is-playing [data-outcome]:not(.is-shown) {
+    opacity: 0.35;
+    filter: saturate(0.3);
+  }
+  [data-outcome] {
+    transition:
+      opacity 0.6s ease,
+      filter 0.6s ease,
+      transform 0.6s ease;
+  }
+  [data-outcome].is-shown {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+  /* waveform */
+  .wave span {
+    width: 3px;
+    height: var(--h);
+    border-radius: 3px;
+    background: rgb(246 242 234 / 0.75);
+    transform-origin: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wave span {
+      animation: wave 1s ease-in-out infinite alternate;
+      animation-delay: var(--d);
+    }
+    [data-scenario]:not(.is-talking) .wave span {
+      animation-play-state: paused;
+      opacity: 0.4;
+    }
+    .ring-pulse {
+      animation: ring 2s ease-out infinite;
+    }
+    .live-dot {
+      animation: blink 1.4s ease-in-out infinite;
+    }
+  }
+  @keyframes wave {
+    from {
+      transform: scaleY(0.35);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes ring {
+    from {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    to {
+      transform: scale(1.7);
+      opacity: 0;
+    }
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.3;
+    }
+  }
+</style>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-scenario]').forEach((root) => {
+    if (reduce) return;
+    const lines = [...root.querySelectorAll<HTMLElement>('[data-line]')];
+    const list = root.querySelector<HTMLElement>('[data-lines]')!;
+    const typing = root.querySelector<HTMLElement>('[data-typing]')!;
+    const outcome = root.querySelector<HTMLElement>('[data-outcome]')!;
+    const replay = root.querySelector<HTMLButtonElement>('[data-replay]')!;
+    const timer = root.querySelector<HTMLElement>('[data-timer]');
+    const kind = root.dataset.kind;
+    let run = 0;
+    let started = false;
+    let seconds = 0;
+    let clock: number | undefined;
+
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const scroll = () => list.scrollTo({ top: list.scrollHeight, behavior: 'smooth' });
+
+    async function play() {
+      const id = ++run;
+      root.classList.add('is-playing');
+      lines.forEach((l) => l.classList.remove('is-shown'));
+      outcome.classList.remove('is-shown');
+      replay.classList.add('hidden');
+      list.scrollTop = 0;
+      seconds = 0;
+      window.clearInterval(clock);
+      if (timer) {
+        timer.textContent = '00:00';
+        clock = window.setInterval(() => {
+          seconds++;
+          timer.textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+        }, 1000);
+      }
+      await wait(500);
+      for (const l of lines) {
+        if (id !== run) return;
+        const isAi = l.classList.contains('from-ai');
+        const len = l.textContent?.length ?? 40;
+        if (isAi && kind !== 'feed') {
+          // show typing / talking indicator
+          typing.classList.remove('hidden');
+          typing.style.marginLeft = 'auto';
+          list.appendChild(typing);
+          root.classList.add('is-talking');
+          scroll();
+          await wait(Math.min(1600, 500 + len * 12));
+          typing.classList.add('hidden');
+        } else {
+          root.classList.toggle('is-talking', kind === 'call' && l.classList.contains('from-customer'));
+        }
+        if (id !== run) return;
+        l.classList.add('is-shown');
+        scroll();
+        await wait(kind === 'feed' ? 900 : Math.min(2200, 700 + len * 18));
+      }
+      root.classList.remove('is-talking');
+      window.clearInterval(clock);
+      outcome.classList.add('is-shown');
+      replay.classList.remove('hidden');
+    }
+
+    replay.addEventListener('click', play);
+    new IntersectionObserver(
+      (entries, obs) => {
+        if (entries[0]?.isIntersecting && !started) {
+          started = true;
+          obs.disconnect();
+          play();
+        }
+      },
+      { threshold: 0.45 },
+    ).observe(root);
+  });
+</script>

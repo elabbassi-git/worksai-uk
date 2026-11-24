@@ -1,0 +1,104 @@
+---
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import CtaButtons from '@/components/CtaButtons.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Faq from '@/components/Faq.astro';
+import ProcessExplorer from '@/components/ProcessExplorer.astro';
+import { publishedCourses, publishedServices, publishedLessons } from '@/lib/content';
+import { courses as coursePrices, formatGBP, fillPrices, courseCreditTowardsService } from '@/data/pricing';
+import { service as serviceSchema, faqPage } from '@/lib/schema';
+
+const courses = await publishedCourses();
+const services = await publishedServices();
+const lessons = await publishedLessons();
+const path = '/ai-shop/training/';
+const description = 'Practical AI courses and workshops for UK small businesses: WhatsApp assistants, Google Business Profile and invoice automation. Courses from [[course:google-business-profile-masterclass]], paid once.';
+const faq = [
+  { q: 'Are the courses a subscription?', a: 'No. Every course is a one-time payment. You are not signed up to anything that renews.' },
+  { q: 'Do I need technical skills?', a: 'Most courses are written for business owners with no technical background. Each course page says who it is for, and the developer course says so clearly.' },
+  { q: 'Can I try before I buy?', a: 'Yes. Every live course has a free lesson published in full, so you can see the teaching style and level first.' },
+  { q: 'Do you run training for teams?', a: 'Yes. We run live workshops for teams and leadership groups. Get in touch with the size of your team and what you want them to be able to do.' },
+  ...(courseCreditTowardsService
+    ? [{ q: 'What if I decide I want you to do it for me?', a: 'If you buy a course and later order the matching service from us, we deduct the course price from the build.' }]
+    : []),
+];
+---
+
+<BaseLayout
+  title="AI Training for Small Business UK | Works AI"
+  description={description}
+  path={path}
+  breadcrumbs={[{ name: 'AI Shop', path: '/ai-shop/' }, { name: 'Training & Coaching', path }]}
+  schema={[serviceSchema({ name: 'AI Training & Coaching', description: fillPrices(description), path, serviceType: 'AI training for small businesses', priceKey: 'none' }), faqPage(faq)]}
+>
+  <PageHero eyebrow="AI Shop · Training & Coaching" title="Learn to put AI to work in your business" intro="Short, practical courses that teach you to set up the same systems we build for clients, step by step. Each course is a one-time payment, and each has a free lesson you can read now.">
+    <CtaButtons class="mt-9 justify-center" showWhatsapp={false} />
+  </PageHero>
+
+  <Section id="courses" eyebrow="Courses" title="Available now" tone="alt">
+    <ul class="grid gap-5 lg:grid-cols-3">
+      {
+        courses.map((c) => {
+          const svc = services.find((s) => s.data.path === c.data.service);
+          const lesson = lessons.find((l) => l.data.course === c.id);
+          return (
+            <li class="card card-link flex flex-col p-7">
+              <p class="eyebrow">{c.data.format} · {c.data.length}</p>
+              <h3 class="mt-3 font-display text-h3 font-semibold">
+                <a href={c.data.path} class="hover:text-signal-deep">{c.data.name}</a>
+              </h3>
+              <p class="mt-2 flex-1 text-ink-2">{fillPrices(c.data.answer)}</p>
+              <p class="mt-6 font-display text-3xl font-semibold">{formatGBP(coursePrices[c.id]!.price)}<span class="text-base font-medium text-ink-3"> one-time</span></p>
+              <div class="mt-4 grid gap-2 border-t border-line pt-4 text-sm">
+                <a href={c.data.path} class="link font-semibold">See the {c.data.name} syllabus</a>
+                {lesson && <a href={lesson.data.path} class="link">Free lesson: {lesson.data.h1}</a>}
+                {svc && <a href={svc.data.path} class="link">Or have us set up the {svc.data.navLabel}</a>}
+              </div>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </Section>
+
+  <Section id="how-it-works" eyebrow="How it works" title="How our courses work, step by step" intro="Click through each stage, or let it play.">
+    <ProcessExplorer
+      id="process"
+      label="A Works AI course: from free lesson to working system"
+      stages={[
+        { actor: 'you', title: 'Read a free lesson', text: 'Every live course has a full free lesson, so you can check the level and teaching style first.' },
+        { actor: 'you', title: 'Buy once', text: 'A one-time payment through our checkout partner. No subscription, nothing that renews.' },
+        { actor: 'us', title: 'Learn in short lessons', text: 'Short videos with written notes, following the same process we use with clients.' },
+        { actor: 'you', title: 'Build alongside the videos', text: 'Use the templates to set it up for your own business as you go.', preview: 'Template: knowledge base · reminder messages · test checklist' },
+        { actor: 'us', title: 'Need a hand? Upgrade any time', text: 'If you later want us to build it for you, we deduct the course price where our pricing says so.' },
+      ]}
+    />
+  </Section>
+
+  <div class="container-x py-16 sm:py-20">
+    <div class="prose prose-lg prose-works prose-cols">
+      <h2>How our courses work</h2>
+      <p>
+        Every course follows the same approach we use with clients: understand the problem, set up the tool, test it with real examples, then keep it running. Lessons are short videos with written notes, and several courses include templates you can copy.
+      </p>
+      <p>
+        We teach with tools that are widely used by UK small businesses, such as Google Business Profile, Xero, n8n and the WhatsApp Business Platform, and we explain what each one costs to run before you start.
+      </p>
+      <h2>Workshops for teams</h2>
+      <p>
+        If you would like your team trained together, we run live workshops covering practical, safe use of AI at work: writing, research, summarising, customer replies and the rules for handling data. <a href="/contact/">Contact us</a> with the size of your team and your goals.
+      </p>
+      <h2>Prefer it done for you?</h2>
+      <p>
+        Every course links to the matching service. If you would rather we build it for you, for a one-time fixed price, see our <a href="/services/">AI services</a>, our <a href="/business/">business solutions</a> or <a href="/pricing/">all prices</a>.
+      </p>
+    </div>
+  </div>
+
+  <Section id="faq" eyebrow="FAQ" title="Course questions" tone="alt">
+    <Faq items={faq} />
+  </Section>
+  <CtaBand />
+</BaseLayout>

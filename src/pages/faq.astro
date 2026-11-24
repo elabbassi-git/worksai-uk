@@ -1,0 +1,164 @@
+---
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Faq from '@/components/Faq.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site } from '@/config/site';
+import { fillPrices, courseCreditTowardsService } from '@/data/pricing';
+import { faqPage } from '@/lib/schema';
+
+type Group = { id: string; title: string; intro: string; items: { q: string; a: string }[] };
+const groups: Group[] = [
+  {
+    id: 'about',
+    title: 'About Works AI',
+    intro: 'Who we are and how we work.',
+    items: [
+      { q: 'What does Works AI do?', a: 'We are a product studio: we design, build and launch SaaS platforms, customer portals, dashboards and AI-powered web apps. We also build websites, AI assistants and automations for smaller businesses, and run courses for people who prefer to do it themselves.' },
+      { q: 'Who do you work with?', a: 'UK businesses of any sector: sole traders, small businesses, professional firms and agencies, plus growing companies of up to around 250 staff.' },
+      { q: 'Do you have an office I can visit?', a: `No. We are a remote team serving UK businesses, working ${site.hours}. We work with clients by video call, email and WhatsApp.` },
+      { q: 'Will customers know they are talking to an AI?', a: 'Yes. Every assistant we build says it is an AI assistant for your business, and customers can ask for a person at any time.' },
+    ],
+  },
+  {
+    id: 'onboarding',
+    title: 'Getting started',
+    intro: 'What happens from first call to launch.',
+    items: [
+      { q: 'How do I get started?', a: 'Book a free 30-minute AI audit. We look at how enquiries, bookings and admin work today and suggest two or three practical next steps, with rough costs. There is no obligation.' },
+      { q: 'What happens after the audit?', a: 'If you want to go ahead, we send a written proposal with a fixed price, what is included and a timeline. Work starts once you approve it.' },
+      { q: 'How much of my time will it take?', a: 'Usually a kick-off call, a couple of hours to check answers or page text, and a final review before launch. We do the rest.' },
+      { q: 'How long do projects take?', a: 'Most assistants and automations take one to three weeks, and most websites three to five weeks. Your proposal gives a specific timeline.' },
+      { q: 'Do I need to buy new software?', a: 'Not usually. We prefer to connect the tools you already use, such as Google Calendar, Outlook, Xero or QuickBooks, and only recommend new software when it clearly saves time or money.' },
+    ],
+  },
+  {
+    id: 'pricing',
+    title: 'Pricing & payment',
+    intro: 'What things cost and how you pay.',
+    items: [
+      { q: 'Do you charge monthly fees?', a: 'No. Everything we build is a single, one-time payment. No retainers, no subscriptions and no monthly management fees.' },
+      { q: 'Why do you publish your prices?', a: 'So you can compare before you talk to us. Every project still gets a fixed quote before work starts.' },
+      { q: 'What does a typical project cost?', a: 'Websites with SEO are [[price:website.build]]. AI assistants start from [[price:aiAssistant.build]]. SaaS platforms get a fixed price after a short discovery phase. All one-time; everything is on our pricing page.' },
+      { q: 'Are there costs from other providers?', a: 'Sometimes, such as hosting, AI usage, WhatsApp message fees or software licences. These run in accounts in your name and you pay the providers directly, never marked up by us. We estimate them up front.' },
+      { q: 'Are courses a subscription?', a: `No. Courses are a one-time payment.${courseCreditTowardsService ? ' If you later ask us to build the same thing, we deduct the course price from the build.' : ''}` },
+    ],
+  },
+  {
+    id: 'support',
+    title: 'UK hours & support',
+    intro: 'How we look after what we build.',
+    items: [
+      { q: 'What are your hours?', a: `${site.hours}. Assistants, receptionists and automations run 24/7; our team responds in UK business hours.` },
+      { q: 'How quickly do you reply?', a: 'We reply to messages within one working day, and sooner for anything that has stopped working.' },
+      { q: 'What happens if something breaks?', a: 'Anything we built wrongly is fixed during the post-launch support period set out in your proposal. Assistants hand over to a person when unsure, and automations pause and alert you rather than send wrong messages.' },
+      { q: 'Can I make changes after launch?', a: 'Yes. You own everything, and we show you how to update answers, prices and text yourself. Bigger changes can be done by any developer, or we quote them as a one-off piece of work.' },
+    ],
+  },
+  {
+    id: 'security',
+    title: 'Security & data',
+    intro: 'How customer data is protected.',
+    items: [
+      { q: 'Who is responsible for my customers’ data?', a: 'You remain the data controller. When we build and run systems for you, we act as your processor under a written agreement, following your instructions.' },
+      { q: 'Do you sign a data processing agreement?', a: 'Yes. A data processing agreement (DPA) is available on request and is signed before we process personal data for you.' },
+      { q: 'Where is data stored?', a: 'It depends on the tools used. We tell you which providers and regions hold your data before we build, and document it for your records.' },
+      { q: 'Is my data used to train AI models?', a: 'We use provider settings and agreements that do not allow your data to be used for training, and we document where processing takes place.' },
+    ],
+  },
+  {
+    id: 'ownership',
+    title: 'Ownership & lock-in',
+    intro: 'You pay once and keep everything.',
+    items: [
+      { q: 'Am I tied into a contract?', a: 'No. Each project is a one-off piece of work with a one-time price. When it is handed over, there is nothing to renew and nothing to cancel.' },
+      { q: 'Can another developer take over?', a: 'Yes. We use proven, well-documented tools and hand over the code and documentation, so any good developer can continue the work.' },
+      { q: 'Who owns what you build?', a: 'You do. Websites, accounts and automations are set up in your name wherever possible, and we hand everything over if you leave.' },
+    ],
+  },
+];
+const filled = groups.map((g) => ({ ...g, items: g.items.map((i) => ({ q: fillPrices(i.q), a: fillPrices(i.a) })) }));
+const all = filled.flatMap((g) => g.items);
+---
+
+<BaseLayout
+  title="FAQ: Working with Works AI | Works AI"
+  description="Answers about Works AI: SaaS builds, one-time pricing with no monthly fees, code ownership, UK hours, support and data security. Or book a free AI audit."
+  path="/faq/"
+  breadcrumbs={[{ name: 'FAQ', path: '/faq/' }]}
+  schema={[faqPage(all)]}
+>
+  <PageHero eyebrow="FAQ" title="Questions about working with Works AI" intro="Everything people usually ask before they get started. Questions about a specific service are answered on that service's page.">
+    <div class="mt-8 min-h-[4.75rem] w-full max-w-xl text-left"><div class="relative" data-faq-search hidden>
+      <label for="faq-filter" class="sr-only">Filter questions</label>
+      <svg class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-3" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8" /><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" /></svg>
+      <input id="faq-filter" type="search" placeholder="Type to filter, e.g. cancel, data, WhatsApp" class="field !rounded-full !pl-11" autocomplete="off" />
+      <p class="mt-2 text-center text-sm text-ink-3" aria-live="polite" data-faq-count></p>
+    </div></div>
+  </PageHero>
+
+  <div class="container-x grid gap-10 pb-16 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-16">
+    <nav aria-label="FAQ categories" class="lg:sticky lg:top-24 lg:self-start">
+      <ul class="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 lg:flex-col lg:overflow-visible">
+        {
+          filled.map((g) => (
+            <li class="shrink-0">
+              <a href={`#${g.id}`} class="flex min-h-11 items-center justify-between gap-3 rounded-full border border-line bg-card px-4 text-sm font-semibold transition-colors hover:border-ink lg:rounded-xl">
+                {g.title}
+                <span class="rounded-full bg-paper-2 px-2 py-0.5 font-mono text-xs text-ink-3">{g.items.length}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="grid gap-14">
+      {
+        filled.map((g) => (
+          <section id={g.id} aria-labelledby={`${g.id}-title`} class="scroll-mt-28" data-faq-group>
+            <h2 id={`${g.id}-title`} class="text-h2">
+              {g.title}
+            </h2>
+            <p class="mt-2 text-ink-3">{g.intro}</p>
+            <div class="mt-6">
+              <Faq items={g.items} />
+            </div>
+          </section>
+        ))
+      }
+      <p class="text-ink-2" data-faq-empty hidden>No questions match. Try another word, or <a href="/contact/" class="link font-semibold">ask us directly</a>.</p>
+      <p class="text-ink-2">
+        Looking for something specific? See our <a href="/pricing/" class="link font-semibold">pricing</a>, <a href="/services/" class="link font-semibold">AI services</a> and <a href="/business/" class="link font-semibold">business solutions</a>.
+      </p>
+    </div>
+  </div>
+  <CtaBand />
+</BaseLayout>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-faq-search]');
+  if (box) {
+    box.hidden = false;
+    const input = box.querySelector('input')!;
+    const count = box.querySelector<HTMLElement>('[data-faq-count]')!;
+    const empty = document.querySelector<HTMLElement>('[data-faq-empty]')!;
+    const groups = [...document.querySelectorAll<HTMLElement>('[data-faq-group]')];
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      let shown = 0;
+      groups.forEach((g) => {
+        let inGroup = 0;
+        g.querySelectorAll<HTMLDetailsElement>('details').forEach((d) => {
+          const match = !q || d.textContent!.toLowerCase().includes(q);
+          d.hidden = !match;
+          if (q) d.open = match && q.length > 2;
+          if (match) inGroup++;
+        });
+        g.hidden = inGroup === 0;
+        shown += inGroup;
+      });
+      empty.hidden = shown > 0;
+      count.textContent = q ? `${shown} matching question${shown === 1 ? '' : 's'}` : '';
+    });
+  }
+</script>

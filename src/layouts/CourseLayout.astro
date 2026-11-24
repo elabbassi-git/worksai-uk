@@ -1,0 +1,130 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Faq from '@/components/Faq.astro';
+import { publishedServices, publishedLessons } from '@/lib/content';
+import { checkoutUrls } from '@/data/checkout';
+import { isSet } from '@/config/site';
+import { course as courseSchema, faqPage } from '@/lib/schema';
+import { courses as coursePrices, formatGBP, fillPrices, priceSummary, courseCreditTowardsService, type ServicePriceKey } from '@/data/pricing';
+
+interface Props {
+  entry: CollectionEntry<'courses'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const faqFilled = d.faq.map((f) => ({ q: fillPrices(f.q), a: fillPrices(f.a) }));
+const { Content } = await render(entry);
+const price = coursePrices[entry.id];
+if (!price) throw new Error(`No price in pricing.ts for course ${entry.id}`);
+const service = (await publishedServices()).find((s) => s.data.path === d.service);
+const lesson = (await publishedLessons()).find((l) => l.data.course === entry.id);
+const checkoutUrl = checkoutUrls[d.checkoutKey] ?? `{{CHECKOUT_URL_${d.checkoutKey}}}`;
+const checkoutReady = isSet(checkoutUrl);
+const description = fillPrices(d.description);
+const lessonsCount = d.syllabus.reduce((n, m) => n + m.lessons.length, 0);
+const schema = [courseSchema({ name: d.name, description, path: d.path, slug: entry.id, mode: d.mode, workload: d.workload }), faqPage(faqFilled)];
+---
+
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  path={d.path}
+  breadcrumbs={[{ name: 'AI Shop', path: '/ai-shop/' }, { name: 'Training & Coaching', path: '/ai-shop/training/' }, { name: d.name, path: d.path }]}
+  schema={schema}
+  updated={d.updated}
+  whatsappMessage={`Hello Works AI, I have a question about the course "${d.name}".`}
+>
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top_right,black,transparent_60%)]"></div>
+    <div class="container-x relative grid gap-12 pb-16 pt-10 sm:pt-14 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+      <div>
+        <p class="eyebrow reveal">Course · {d.format}</p>
+        <h1 class="mt-5 text-h1">{d.h1}</h1>
+        <p class="reveal reveal-2 mt-6 max-w-2xl text-lead text-ink-2">{fillPrices(d.answer)}</p>
+        {
+          lesson && (
+            <a href={lesson.data.path} class="reveal reveal-3 btn btn-secondary mt-8">
+              Read the free lesson: {lesson.data.h1}
+            </a>
+          )
+        }
+      </div>
+      <aside class="reveal reveal-3 card p-7 lg:sticky lg:top-24" aria-label="Price and format">
+        <p class="font-display text-5xl font-semibold tracking-tight">{price.from && <span class="text-lg font-medium text-ink-3">from </span>}{formatGBP(price.price)}</p>
+        <p class="mt-1 text-ink-2">{d.mode === 'recorded' ? 'One-time payment, lifetime access.' : 'One-time payment.'} <span class="text-ink-3">{'{{CONFIRM_ACCESS_TERMS}}'}</span></p>
+        <dl class="mt-6 grid grid-cols-2 gap-4 border-y border-line py-5 text-sm">
+          <div><dt class="text-ink-3">Format</dt><dd class="font-semibold">{d.format}</dd></div>
+          <div><dt class="text-ink-3">Length</dt><dd class="font-semibold">{d.length}</dd></div>
+          <div><dt class="text-ink-3">Lessons</dt><dd class="font-semibold">{lessonsCount} in {d.syllabus.length} modules</dd></div>
+          <div><dt class="text-ink-3">Language</dt><dd class="font-semibold">UK English</dd></div>
+        </dl>
+        {
+          checkoutReady ? (
+            <a href={checkoutUrl} class="btn btn-primary mt-6 w-full" data-event="course_buy_click" data-event-label={entry.id} rel="noopener">Buy now</a>
+          ) : (
+            <p class="mt-6"><span class="btn w-full cursor-not-allowed bg-paper-3 text-ink-2" aria-disabled="true">Buy now</span><span class="mt-2 block text-xs text-ink-3">Checkout opens soon. {checkoutUrl}</span></p>
+          )
+        }
+        <p class="mt-3 text-xs leading-relaxed text-ink-3">Secure checkout on our payment partner's site, which handles payment and VAT. You will be asked to confirm that the course can start straight away.</p>
+        {courseCreditTowardsService && service && <p class="mt-4 rounded-xl bg-moss-soft/70 p-3 text-sm text-moss">If you later ask us to build the {service.data.navLabel} for you, we deduct the course price from the build.</p>}
+      </aside>
+    </div>
+  </section>
+
+  <Section id="who" eyebrow="Who it is for" title="Is this course for you?" tone="alt">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div>
+        <h3 class="font-display text-h3 font-semibold">This course is for</h3>
+        <ul class="mt-4 grid gap-3 text-ink-2">{d.audience.map((a) => <li class="flex gap-3"><span aria-hidden="true" class="mt-2.5 size-1.5 shrink-0 rounded-full bg-signal"></span>{a}</li>)}</ul>
+      </div>
+      <div>
+        <h3 class="font-display text-h3 font-semibold">You will be able to</h3>
+        <ul class="mt-4 grid gap-3 text-ink-2">{d.outcomes.map((o) => <li class="flex gap-3"><svg class="mt-1 shrink-0 text-moss" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" /></svg>{o}</li>)}</ul>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="syllabus" eyebrow="Syllabus" title="What the course covers">
+    <ol class="grid gap-4">
+      {
+        d.syllabus.map((m, i) => (
+          <li class="card grid gap-4 p-6 sm:grid-cols-[8rem_1fr] sm:p-7">
+            <p class="font-mono text-sm text-signal-deep">Module {i + 1}</p>
+            <div>
+              <h3 class="font-display text-h3 font-semibold">{m.module}</h3>
+              <ul class="mt-3 grid gap-1.5 text-ink-2">{m.lessons.map((l) => <li>{l}</li>)}</ul>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="prose prose-lg prose-works prose-cols mt-12"><Content /></div>
+  </Section>
+
+  <Section id="faq" eyebrow="FAQ" title="Course questions" tone="alt">
+    <Faq items={faqFilled} />
+  </Section>
+
+  {
+    service && (
+      <Section id="done-for-you" eyebrow="Done for you" title="Prefer us to do it for you?">
+        <a href={service.data.path} class="card card-link grid gap-6 p-7 sm:grid-cols-[1fr_auto] sm:items-center sm:p-9">
+          <div>
+            <h3 class="font-display text-h3 font-semibold">{service.data.navLabel}, built and run by Works AI</h3>
+            <p class="mt-2 max-w-2xl text-ink-2">{fillPrices(service.data.answer)}</p>
+          </div>
+          <div class="sm:text-right">
+            <p class="font-semibold">{priceSummary(service.data.priceKey as ServicePriceKey)}</p>
+            <p class="link mt-1 font-semibold">See the {service.data.navLabel} service</p>
+          </div>
+        </a>
+      </Section>
+    )
+  }
+
+  <CtaBand />
+</BaseLayout>

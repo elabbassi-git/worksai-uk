@@ -1,0 +1,60 @@
+---
+import { site, isSet } from '@/config/site';
+import { isPublished } from '@/lib/content';
+const analytics = isSet(site.ga4Id);
+const marketing = isSet(site.adPixelId);
+// Only ask for consent when something non-essential could load. In dev we always show it so it can be tested.
+const required = analytics || marketing || import.meta.env.DEV;
+const registryHasCookies = await isPublished('/cookies/'); // link appears once the draft is published
+---
+
+<div
+  id="cookie-banner"
+  data-required={required ? '1' : '0'}
+  data-ga={analytics ? site.ga4Id : ''}
+  data-marketing={marketing ? '1' : '0'}
+  hidden
+  role="region"
+  aria-label="Cookie choices"
+  class="fixed inset-x-3 bottom-3 z-[90] mx-auto max-w-[44rem] sm:inset-x-6 sm:bottom-6"
+>
+  <div class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold">Cookies on worksai.uk</h2>
+    <p class="mt-2 text-[0.96rem] text-ink-2">
+      We use essential cookies to make this site work. With your permission we would also like to use analytics cookies
+      (Google Analytics) to understand which pages help people. Nothing non-essential loads unless you accept.
+      {registryHasCookies && <a href="/cookies/" class="link">Read our cookie policy</a>}
+    </p>
+
+    <form id="cookie-settings" hidden class="mt-4 grid gap-3 rounded-xl bg-paper p-4">
+      <label class="flex items-start gap-3">
+        <input type="checkbox" checked disabled class="mt-1 size-5 accent-ink" />
+        <span><strong>Essential</strong><span class="block text-sm text-ink-3">Needed for the site and to remember your choice. Always on.</span></span>
+      </label>
+      <label class="flex items-start gap-3">
+        <input type="checkbox" name="analytics" class="mt-1 size-5 accent-ink" />
+        <span><strong>Analytics</strong><span class="block text-sm text-ink-3">Google Analytics 4, to count visits and enquiries. Off unless you turn it on.</span></span>
+      </label>
+      <label class="flex items-start gap-3">
+        <input type="checkbox" name="marketing" class="mt-1 size-5 accent-ink" disabled={!marketing} />
+        <span
+          ><strong>Marketing</strong><span class="block text-sm text-ink-3"
+            >{marketing ? 'Advertising measurement. Off unless you turn it on.' : 'We do not use marketing cookies at the moment.'}</span
+          ></span
+        >
+      </label>
+      <button type="submit" class="btn btn-secondary justify-self-start !min-h-11">Save my choices</button>
+    </form>
+
+    <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <button type="button" data-consent="accept" class="btn btn-secondary !min-h-11">Accept all</button>
+      <button type="button" data-consent="reject" class="btn btn-secondary !min-h-11">Reject all</button>
+      <button type="button" data-consent="settings" class="btn btn-secondary !min-h-11" aria-expanded="false" aria-controls="cookie-settings">Settings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initConsent } from '@/lib/consent';
+  initConsent();
+</script>

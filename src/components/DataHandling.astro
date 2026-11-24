@@ -1,0 +1,20 @@
+---
+import { isPublished } from '@/lib/content';
+const linkDp = await isPublished('/data-protection/');
+---
+
+<aside aria-labelledby="data-handling-title" class="card grid gap-6 p-6 sm:grid-cols-[auto_1fr] sm:p-8">
+  <div class="grid size-14 place-items-center rounded-2xl bg-moss-soft text-moss" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+  </div>
+  <div>
+    <h2 id="data-handling-title" class="font-display text-h3 font-semibold">How we handle your data</h2>
+    <ul class="mt-3 grid gap-2 text-ink-2">
+      <li>When we build for you, your business stays the data controller and we act as your processor, under a written agreement.</li>
+      <li>We collect only what a system needs to do its job, and we tell you where it is stored before we build.</li>
+      <li>A data processing agreement (DPA) is available on request.</li>
+      <li>Where data leaves the UK, we explain which safeguards apply under UK GDPR.</li>
+    </ul>
+    {linkDp && <a href="/data-protection/" class="link mt-4 inline-block font-semibold">Read our data protection page</a>}
+  </div>
+</aside>

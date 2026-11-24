@@ -1,0 +1,127 @@
+---
+/**
+ * Master-detail view for a service page's Markdown sections.
+ * LEFT: one button per H2 section. RIGHT: the selected section, in a card that sizes
+ * to its content (no dead space, no orphan cards).
+ * Without JS every section is shown full width, stacked.
+ */
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+  id?: string;
+}
+const { headings, id = 'details' } = Astro.props;
+const sections = headings.filter((h) => h.depth === 2);
+---
+
+<div class="details grid grid-cols-1 gap-5 lg:grid-cols-[19rem_minmax(0,1fr)] lg:gap-8" data-details id={id}>
+  <div class="details-nav hidden min-w-0" data-details-nav>
+    <div role="tablist" aria-orientation="vertical" aria-label="Topics" class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+      {
+        sections.map((h, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`${id}-tab-${i}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-controls={`${id}-panel-${i}`}
+            tabindex={i === 0 ? 0 : -1}
+            class="dtab group flex min-h-12 shrink-0 items-center gap-3 rounded-2xl border border-line bg-card px-4 py-3 text-left font-semibold transition-all duration-300 lg:w-full"
+            data-i={i}
+          >
+            <span class="dtab-n grid size-7 shrink-0 place-items-center rounded-full bg-paper-2 font-mono text-xs text-ink-2 transition-colors">{String(i + 1).padStart(2, '0')}</span>
+            <span class="min-w-0 flex-1 leading-snug">{h.text}</span>
+            <svg class="hidden shrink-0 opacity-40 transition-transform group-aria-selected:translate-x-0.5 group-aria-selected:opacity-100 lg:block" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" />
+            </svg>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+  <div class="details-panels md-tabs min-w-0" data-details-panels>
+    <slot />
+  </div>
+</div>
+
+<style>
+  .dtab:hover {
+    border-color: var(--color-line-strong);
+  }
+  .dtab[aria-selected='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+    box-shadow: var(--shadow-lift);
+  }
+  .dtab[aria-selected='true'] .dtab-n {
+    background: var(--color-signal);
+    color: var(--color-ink);
+  }
+  .details.is-enhanced .details-nav {
+    display: block;
+  }
+  @media (min-width: 1024px) {
+    .details:not(.is-enhanced) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .details.is-enhanced .details-nav > div {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+  .details.is-enhanced :global(.md-cell:not(.is-active)) {
+    display: none;
+  }
+  .details.is-enhanced :global(.md-cell.is-active) {
+    animation: panel-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .details-panels :global(.md-cell + .md-cell) {
+    margin-top: 1rem;
+  }
+  .details.is-enhanced .details-panels :global(.md-cell + .md-cell) {
+    margin-top: 0;
+  }
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-details]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('.md-cell')];
+    if (tabs.length < 2 || panels.length !== tabs.length) return; // keep the stacked fallback
+    const id = root.id;
+    panels.forEach((p, i) => {
+      p.id = `${id}-panel-${i}`;
+      p.setAttribute('role', 'tabpanel');
+      p.setAttribute('aria-labelledby', `${id}-tab-${i}`);
+      p.tabIndex = 0;
+    });
+    root.classList.add('is-enhanced');
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, n) => {
+        const on = n === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((p, n) => p.classList.toggle('is-active', n === i));
+      if (focus) tabs[i]!.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const n = tabs.length;
+        const map: Record<string, number> = { ArrowDown: (i + 1) % n, ArrowRight: (i + 1) % n, ArrowUp: (i - 1 + n) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 };
+        if (e.key in map) {
+          e.preventDefault();
+          select(map[e.key]!, true);
+        }
+      });
+    });
+    select(0);
+  });
+</script>

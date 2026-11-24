@@ -1,0 +1,110 @@
+---
+import Logo from './Logo.astro';
+import { site, whatsappLink } from '@/config/site';
+import { publishedServices, publishedRegistry } from '@/lib/content';
+
+interface Props {
+  path: string;
+  whatsappMessage?: string;
+}
+const { whatsappMessage } = Astro.props;
+const services = await publishedServices();
+const registry = await publishedRegistry();
+const legal = [
+  ['/privacy/', 'Privacy'],
+  ['/cookies/', 'Cookies'],
+  ['/terms/', 'Terms'],
+  ['/data-protection/', 'Data protection'],
+].filter(([p]) => registry.has(p));
+
+const cols = [
+  { title: 'Services', items: services.filter((s) => s.data.group === 'services').map((s) => [s.data.path, s.data.navLabel]) },
+  { title: 'Business Solutions', items: services.filter((s) => s.data.group === 'business').map((s) => [s.data.path, s.data.navLabel]) },
+  {
+    title: 'Start here',
+    items: [
+      ['/free-ai-audit/', 'Free 30-minute AI audit'],
+      ['/free-seo-check/', 'Free website & SEO check'],
+      ['/small-business-website/', 'No website yet?'],
+      ['/website-redesign/', 'Old or slow website?'],
+      ['/seo-for-small-business/', 'SEO for small business'],
+      ['/get-found-on-google/', 'Get found on Google'],
+    ].filter(([p]) => registry.has(p!)),
+  },
+  {
+    title: 'Works AI',
+    items: [
+      ['/pricing/', 'Pricing'],
+      ['/ai-shop/training/', 'Courses & training'],
+      ['/about/', 'About us'],
+      ['/faq/', 'FAQ'],
+      ['/blog/', 'Blog'],
+      ['/contact/', 'Contact us'],
+    ],
+  },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="on-dark grain mt-auto bg-night text-paper/90">
+  <div class="container-x py-16">
+    <div class="grid gap-12 lg:grid-cols-[1.1fr_2fr]">
+      <div class="max-w-sm">
+        <a href="/" aria-label="Works AI home" class="inline-block rounded-lg"><Logo dark animated /></a>
+        <p class="mt-5 text-paper/80">{site.tagline}.</p>
+        <p class="mt-4 text-paper/80">
+          {site.location}. Hours: {site.hours}. <span class="text-paper/60">{site.hoursNote}</span>
+        </p>
+        <ul class="mt-6 grid gap-2 text-paper">
+          <li><a class="underline decoration-paper/30 underline-offset-4 hover:decoration-signal" href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li><a class="underline decoration-paper/30 underline-offset-4 hover:decoration-signal" href={`tel:${site.phone}`}>{site.phoneDisplay}</a></li>
+          <li>
+            <a
+              class="underline decoration-paper/30 underline-offset-4 hover:decoration-signal"
+              href={whatsappLink(whatsappMessage)}
+              data-event="whatsapp_click"
+              rel="noopener">Chat on WhatsApp</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="grid grid-cols-2 gap-10 md:grid-cols-4">
+        {
+          cols.map((c) => (
+            <div>
+              <h2 class="eyebrow !text-paper/60">{c.title}</h2>
+              <ul class="mt-4 grid gap-2.5 text-[0.96rem]">
+                {c.items.map(([href, label]) => (
+                  <li>
+                    <a href={href} class="text-paper/85 hover:text-paper hover:underline hover:decoration-signal hover:underline-offset-4">
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-14 flex flex-col gap-4 border-t border-paper/15 pt-6 text-sm text-paper/65 md:flex-row md:items-center md:justify-between">
+      <p>
+        © {year}
+        {site.legalName}, trading as {site.brand}. Company registration no. {site.registrationNumber}.
+      </p>
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-2">
+        {
+          legal.map(([href, label]) => (
+            <li>
+              <a href={href} class="hover:text-paper hover:underline">
+                {label}
+              </a>
+            </li>
+          ))
+        }
+        <li><button type="button" data-cookie-settings class="min-h-11 hover:text-paper hover:underline">Cookie settings</button></li>
+      </ul>
+    </div>
+  </div>
+</footer>

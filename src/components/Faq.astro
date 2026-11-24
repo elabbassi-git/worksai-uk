@@ -1,0 +1,34 @@
+---
+interface Props {
+  items: { q: string; a: string }[];
+  numbered?: boolean;
+  /** Open the first item by default */
+  openFirst?: boolean;
+}
+const { items, numbered = false, openFirst = false } = Astro.props;
+---
+
+<div class="faq-list grid gap-3">
+  {
+    items.map((f, i) => (
+      <details class="faq group rounded-2xl border border-line bg-card shadow-[var(--shadow-card)] transition-[border-color,box-shadow] duration-300 open:border-ink/25 open:shadow-[var(--shadow-lift)]" open={openFirst && i === 0}>
+        <summary class="flex min-h-16 items-center gap-4 px-5 py-4 sm:px-6">
+          {numbered && (
+            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-paper-2 font-mono text-xs text-ink-2 transition-colors group-open:bg-signal group-open:text-ink">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+          )}
+          <span class="flex-1 font-display text-lg font-semibold leading-snug sm:text-xl">{f.q}</span>
+          <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full border border-line-strong transition-all duration-300 group-open:rotate-45 group-open:border-ink group-open:bg-ink group-open:text-paper">
+            <svg width="12" height="12" viewBox="0 0 12 12">
+              <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" />
+            </svg>
+          </span>
+        </summary>
+        <div class:list={['max-w-3xl px-5 pb-6 text-ink-2 sm:px-6', numbered && 'sm:pl-[4.5rem]']}>
+          <p>{f.a}</p>
+        </div>
+      </details>
+    ))
+  }
+</div>

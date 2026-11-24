@@ -1,0 +1,195 @@
+---
+/**
+ * "What we build" master-detail: clickable items on the left, rich detail on the right.
+ * The detail card is a full composition (summary, includes, features, architecture, visual),
+ * so it never shows dead space. Without JS, every item renders in full, stacked.
+ */
+import { icons, type Icon } from '@/data/diagrams';
+
+export type Offering = {
+  title: string;
+  blurb: string;
+  icon: string;
+  badge: string;
+  summary: string;
+  includes: string[];
+  features: string[];
+  stack: string[];
+};
+interface Props {
+  items: Offering[];
+  id?: string;
+}
+const { items, id = 'offerings' } = Astro.props;
+const icon = (k: string) => icons[(k in icons ? k : 'layers') as Icon];
+---
+
+<div class="offerings grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)] lg:gap-8" data-offerings id={id}>
+  <div role="tablist" aria-orientation="vertical" aria-label="What we build" class="off-nav hidden min-w-0 gap-2" data-off-nav>
+    {
+      items.map((o, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`${id}-tab-${i}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          aria-controls={`${id}-panel-${i}`}
+          tabindex={i === 0 ? 0 : -1}
+          class="otab group flex w-full items-center gap-4 rounded-2xl border border-line bg-card p-4 text-left transition-all duration-300"
+        >
+          <span class="otab-icon grid size-11 shrink-0 place-items-center rounded-xl bg-paper-2 text-ink-2 transition-colors" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d={icon(o.icon)} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-display text-lg font-semibold leading-snug">{o.title}</span>
+            <span class="otab-blurb block text-sm leading-snug text-ink-3">{o.blurb}</span>
+          </span>
+          <svg class="shrink-0 opacity-30 transition-all group-aria-selected:translate-x-0.5 group-aria-selected:opacity-100" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" />
+          </svg>
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="off-panels min-w-0" data-off-panels>
+    {
+      items.map((o, i) => (
+        <div id={`${id}-panel-${i}`} class="opanel card relative overflow-hidden p-6 sm:p-8" data-panel={i} aria-labelledby={`${id}-title-${i}`}>
+          <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-signal/15 blur-2xl" />
+          <header class="relative flex flex-wrap items-start justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <span class="grid size-14 place-items-center rounded-2xl bg-ink text-paper" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24"><path d={icon(o.icon)} fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+              <div>
+                <p class="eyebrow">What we build · {String(i + 1).padStart(2, '0')}</p>
+                <h3 id={`${id}-title-${i}`} class="mt-1 font-display text-h3 font-semibold">{o.title}</h3>
+              </div>
+            </div>
+            <span class="rounded-full bg-moss-soft px-3 py-1 text-sm font-semibold text-moss">{o.badge}</span>
+          </header>
+          <p class="relative mt-5 text-lead text-ink-2">{o.summary}</p>
+          <div class="relative mt-6 grid gap-6 sm:grid-cols-2">
+            <div>
+              <h4 class="eyebrow">What it includes</h4>
+              <ul class="mt-3 grid gap-2">
+                {o.includes.map((x) => (
+                  <li class="flex gap-3 text-ink-2">
+                    <span class="mt-1 grid size-4 shrink-0 place-items-center rounded-full bg-moss text-paper" aria-hidden="true">
+                      <svg width="9" height="9" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.6" /></svg>
+                    </span>
+                    {x}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 class="eyebrow">Key features</h4>
+              <ul class="mt-3 grid gap-2">
+                {o.features.map((x) => (
+                  <li class="flex gap-3 text-ink-2">
+                    <span class="mt-2 size-1.5 shrink-0 rounded-full bg-signal" aria-hidden="true" />
+                    {x}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div class="relative mt-6 rounded-2xl bg-paper p-4 ring-1 ring-line">
+            <h4 class="eyebrow">Architecture &amp; deliverables</h4>
+            <ul class="mt-3 flex flex-wrap gap-2">
+              {o.stack.map((s, n) => (
+                <li class="chip-in rounded-full bg-card px-3 py-1.5 text-sm font-semibold ring-1 ring-line" style={`--n:${n}`}>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .otab:hover {
+    border-color: var(--color-line-strong);
+  }
+  .otab[aria-selected='true'] {
+    border-color: var(--color-ink);
+    box-shadow: var(--shadow-lift);
+  }
+  .otab[aria-selected='true'] .otab-icon {
+    background: var(--color-signal);
+    color: var(--color-ink);
+  }
+  .offerings:not(.is-enhanced) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .offerings:not(.is-enhanced) .opanel + .opanel {
+    margin-top: 1rem;
+  }
+  .offerings.is-enhanced .off-nav {
+    display: grid;
+    align-content: start;
+  }
+  .offerings.is-enhanced .opanel:not(.is-active) {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .offerings.is-enhanced .opanel.is-active {
+      animation: o-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .offerings.is-enhanced .opanel.is-active .chip-in {
+      animation: o-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(0.15s + var(--n) * 0.05s);
+    }
+  }
+  @keyframes o-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  @media (max-width: 1023px) {
+    .offerings.is-enhanced .off-nav {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(15rem, 80%);
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-offerings]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    root.classList.add('is-enhanced');
+    panels.forEach((p) => {
+      p.setAttribute('role', 'tabpanel');
+      p.tabIndex = 0;
+    });
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, n) => {
+        t.setAttribute('aria-selected', String(n === i));
+        t.tabIndex = n === i ? 0 : -1;
+      });
+      panels.forEach((p, n) => p.classList.toggle('is-active', n === i));
+      if (focus) tabs[i]!.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const n = tabs.length;
+        const map: Record<string, number> = { ArrowDown: (i + 1) % n, ArrowRight: (i + 1) % n, ArrowUp: (i - 1 + n) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 };
+        if (e.key in map) {
+          e.preventDefault();
+          select(map[e.key]!, true);
+        }
+      });
+    });
+    select(0);
+  });
+</script>

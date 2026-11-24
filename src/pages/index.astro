@@ -1,0 +1,368 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Faq from '@/components/Faq.astro';
+import HeroShowcase from '@/components/HeroShowcase.astro';
+import PlatformShowcase from '@/components/PlatformShowcase.astro';
+import ProcessExplorer from '@/components/ProcessExplorer.astro';
+import { getEntry } from 'astro:content';
+import { diagramFor } from '@/data/diagrams';
+import DataHandling from '@/components/DataHandling.astro';
+import { site } from '@/config/site';
+import { publishedServices, publishedCaseStudies, publishedPosts } from '@/lib/content';
+import PostCards from '@/components/PostCards.astro';
+import { faqPage } from '@/lib/schema';
+import { services as prices, priceSummary, fillPrices, type ServicePriceKey } from '@/data/pricing';
+
+const services = await publishedServices();
+const saas = await getEntry('services', 'saas-development');
+const caseStudies = await publishedCaseStudies();
+const latestPosts = (await publishedPosts()).slice(0, 3);
+const byGroup = (g: string) => services.filter((s) => s.data.group === g && !s.data.parent);
+
+const problems = [
+  {
+    tag: 'No website yet',
+    title: 'Customers look you up and find nothing',
+    text: 'Most people check a business online before they call. Without a website, they choose someone who has one.',
+    href: '/small-business-website/',
+    link: 'Get a small business website',
+  },
+  {
+    tag: 'Not found on Google',
+    title: 'You have a site, but nobody finds it',
+    text: 'An old or slow site, a thin Google Business Profile and no reviews mean you stay off page one for the searches that matter.',
+    href: '/get-found-on-google/',
+    link: 'How to get your business on Google',
+  },
+  {
+    tag: 'Missed enquiries & admin',
+    title: 'Messages arrive while you are on a job',
+    text: 'Calls go to voicemail, WhatsApps wait until evening and invoices go unchased. An AI assistant can answer, book and remind for you.',
+    href: '/services/ai-agents/',
+    link: 'See how AI agents answer for you',
+  },
+];
+
+const groups = [
+  {
+    title: 'Services',
+    href: '/services/',
+    text: 'AI agents that answer, book and log enquiries, plus local SEO that gets you onto Google Maps.',
+    items: byGroup('services'),
+  },
+  {
+    title: 'Business Solutions',
+    href: '/business/',
+    text: 'Websites, online booking and automated invoice reminders: the systems that run your week.',
+    items: byGroup('business'),
+  },
+  {
+    title: 'AI Shop',
+    href: '/ai-shop/',
+    text: 'Prefer to learn it yourself? Practical courses and workshops, each a single one-time payment.',
+    items: [],
+    extra: [
+      { label: 'AI Training & Coaching', href: '/ai-shop/training/' },
+    ],
+  },
+];
+
+const priceRows: { key: ServicePriceKey; href: string }[] = [
+  { key: 'saasPlatform', href: '/services/saas-development/' },
+  { key: 'website', href: '/business/website-design-seo/' },
+  { key: 'aiAssistant', href: '/services/ai-agents/whatsapp/' },
+  { key: 'aiReceptionist', href: '/services/ai-agents/ai-receptionist/' },
+  { key: 'workflowAutomation', href: '/business/automated-invoice-reminders/' },
+  { key: 'writtenAudit', href: '/free-ai-audit/' },
+];
+
+const steps = [
+  { title: 'Discover', text: 'A free 30-minute call, then a clear scope and one fixed price. You know exactly what you get before anything starts.' },
+  { title: 'Build', text: 'We design and build in short sprints, with a working version you can test from early on.' },
+  { title: 'Launch and hand over', text: 'We launch on infrastructure in your name and hand over the code, accounts and documentation. No retainer, no lock-in.' },
+];
+
+const faq = [
+  {
+    q: 'Do you have an office I can visit?',
+    a: `No. We are a remote team serving UK businesses, working ${site.hours}. We work with clients by video call, email and WhatsApp.`,
+  },
+  {
+    q: 'What kind of SaaS platforms do you build?',
+    a: 'Multi-tenant SaaS products for founders, customer portals, internal platforms that replace spreadsheets, live dashboards and AI-powered web apps, all built to production standard.',
+  },
+  {
+    q: 'Do I need to understand AI to work with you?',
+    a: 'No. We explain everything in plain English, set it up for you and show you how to check it is working. You stay in control of what the assistant says.',
+  },
+  {
+    q: 'How much does it cost?',
+    a: 'Everything is a one-time payment. Websites are [[price:website.build]] and AI assistants start from [[price:aiAssistant.build]]. SaaS platforms get a fixed price after a short discovery phase. There are no monthly fees from us.',
+  },
+  {
+    q: 'What happens to my customers’ data?',
+    a: 'You stay the data controller and we act as your processor under a written agreement. We collect only what a system needs and tell you where it is stored before we build.',
+  },
+  {
+    q: 'Do I own what you build?',
+    a: 'Yes. Code, accounts, domains and data are set up in your name, and we hand over documentation at launch. Running costs such as hosting are paid directly to the providers, never marked up by us.',
+  },
+];
+---
+
+<BaseLayout
+  title="SaaS & Web Platform Development UK | Works AI"
+  description="We design, build and launch SaaS platforms, AI web apps and websites for UK businesses. One-time fixed prices, no monthly fees, you own the code. Free AI audit."
+  path="/"
+  schema={[faqPage(faq.map((f) => ({ q: f.q, a: fillPrices(f.a) })))]}
+>
+  <!-- Hero -->
+  <section class="grain relative overflow-hidden">
+    <div aria-hidden="true" class="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_30%_20%,black,transparent_70%)]"></div>
+    <div class="container-x relative grid items-center gap-16 pb-24 pt-12 sm:pt-20 lg:grid-cols-[1.05fr_1fr] lg:pb-32">
+      <div>
+        <!-- Synced hero copy: all four blocks share one grid cell, so the height never changes (CLS 0). -->
+        <div class="hero-copy grid" data-hero-copy>
+          {
+            [
+              { eyebrow: 'SaaS & platform development studio for UK businesses', a: 'We build SaaS platforms.', b: 'You own every line.', text: 'Works AI designs, engineers and launches production-ready SaaS products, customer platforms and AI-powered web apps. One fixed price, paid once. The code, accounts and data are yours.' },
+              { eyebrow: 'Professional web development', a: 'Websites that load fast', b: 'and win enquiries.', text: 'Fast, accessible business websites with on-page SEO and an AI chat assistant built in, for one fixed price, launched on hosting in your name.' },
+              { eyebrow: 'AI & workflow automation', a: 'Every enquiry answered,', b: 'booked and logged.', text: 'AI assistants and automations that qualify leads, book appointments, send WhatsApp confirmations and sync your CRM around the clock. A one-time build, with no monthly fee.' },
+              { eyebrow: 'SEO & search growth', a: 'Get found on Google', b: 'by the right customers.', text: 'Search-first page structure, Google Business Profile set-up and on-page SEO that help local customers find you. No ranking guarantees, just the work that moves the needle.' },
+            ].map((c, i) => (
+              <div class:list={['copy-block', i === 0 && 'is-active']} data-copy={i} aria-hidden={i === 0 ? undefined : 'true'}>
+                <p class="eyebrow flex items-center gap-2">
+                  <span class="size-2 rounded-full bg-signal" aria-hidden="true" />
+                  {c.eyebrow}
+                </p>
+                {i === 0 ? (
+                  <h1 class="mt-6 text-display">
+                    {c.a} <span class="text-ink-3">{c.b}</span>
+                  </h1>
+                ) : (
+                  <p class="mt-6 font-display text-display font-[650] tracking-[-0.022em] [text-wrap:balance]">
+                    {c.a} <span class="text-ink-3">{c.b}</span>
+                  </p>
+                )}
+                <p class="mt-7 max-w-xl text-lead text-ink-2" data-speakable={i === 0 ? true : undefined}>{c.text}</p>
+              </div>
+            ))
+          }
+        </div>
+        <a href="/free-ai-audit/" class="btn btn-primary reveal reveal-3 mt-10" data-event="audit_booking_click">
+          Book a free 30-minute AI audit
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+        </a>
+      </div>
+      <HeroShowcase />
+    </div>
+  </section>
+
+  <!-- Showcase -->
+  <Section id="showcase" eyebrow="What we build" title="Real software, built to production standard" intro="From a founder's first SaaS release to the platform your whole company runs on. Designed, engineered, tested and handed over.">
+    <PlatformShowcase />
+  </Section>
+
+  <!-- How we build -->
+  {
+    saas && (
+      <Section id="process" eyebrow="How we build" title="From idea to launched platform, step by step" intro="Watch a platform come together, stage by stage. It plays on its own." tone="alt">
+        <ProcessExplorer id="home-process" stages={saas.data.workflow} diagram={diagramFor('saas-development', saas.data.workflow.length)} label="SaaS & Platform Development: live workflow" />
+      </Section>
+    )
+  }
+
+  <!-- Three problems -->
+  <Section id="problems" eyebrow="For smaller businesses" title="Not building a platform? We fix these too" intro="Pick the one that sounds most like your business. Each page explains it simply and shows what good looks like.">
+    <ul class="grid gap-5 md:grid-cols-3">
+      {
+        problems.map((p, i) => (
+          <li>
+            <a href={p.href} class="card card-link group flex h-full flex-col p-7">
+              <span class="font-mono text-sm text-signal-deep">{String(i + 1).padStart(2, '0')} · {p.tag}</span>
+              <h3 class="mt-4 font-display text-h3 font-semibold">{p.title}</h3>
+              <p class="mt-3 flex-1 text-ink-2">{p.text}</p>
+              <span class="mt-6 flex items-center gap-2 font-semibold">
+                <span class="underline decoration-line-strong underline-offset-4 group-hover:decoration-signal">{p.link}</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="transition-transform group-hover:translate-x-1">
+                  <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <!-- Service groups -->
+  <Section id="services" eyebrow="What we do" title="Three ways we can help" intro="Done for you, built to last, and priced up front.">
+    <div class="grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line lg:grid-cols-3">
+      {
+        groups.map((g) => (
+          <div class="flex flex-col bg-card p-7 sm:p-9">
+            <h3 class="font-display text-h2 font-semibold">{g.title}</h3>
+            <p class="mt-3 text-ink-2">{g.text}</p>
+            <ul class="mt-6 grid flex-1 content-start gap-1 border-t border-line pt-4">
+              {g.items.map((s) => (
+                <li>
+                  <a href={s.data.path} class="flex min-h-11 items-center justify-between gap-4 rounded-lg py-1 hover:text-signal-deep">
+                    <span class="font-medium">{s.data.navLabel}</span>
+                    <span class="text-sm text-ink-3">{priceSummary(s.data.priceKey as ServicePriceKey).replace(' build', '')}</span>
+                  </a>
+                </li>
+              ))}
+              {(g.extra ?? []).map((x) => (
+                <li>
+                  <a href={x.href} class="flex min-h-11 items-center rounded-lg py-1 font-medium hover:text-signal-deep">
+                    {x.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href={g.href} class="btn btn-secondary mt-6 self-start">
+              Explore {g.title}
+            </a>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Prices -->
+  <Section id="prices" eyebrow="Prices" title="Pay once. Own it. No monthly fees." intro="Every project is a single fixed price agreed before we start. No retainers, no subscriptions, no lock-in." tone="alt">
+    <div class="card overflow-hidden">
+      <table class="w-full text-left">
+        <caption class="sr-only">Works AI starting prices</caption>
+        <thead class="bg-paper-2/70 text-sm text-ink-3">
+          <tr><th scope="col" class="px-6 py-4 font-semibold sm:px-8">Service</th><th scope="col" class="px-6 py-4 font-semibold sm:px-8">Price</th></tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          {
+            priceRows.map((r) => (
+              <tr>
+                <th scope="row" class="px-6 py-4 font-medium sm:px-8">
+                  <a href={r.href} class="hover:text-signal-deep hover:underline">
+                    {prices[r.key].name}
+                  </a>
+                </th>
+                <td class="px-6 py-4 font-display text-lg font-semibold sm:px-8">{priceSummary(r.key)}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <div class="flex flex-col gap-3 border-t border-line px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        <p class="text-ink-2">Courses and every other price are on one page. All one-time.</p>
+        <a href="/pricing/" class="btn btn-secondary">See full pricing</a>
+      </div>
+    </div>
+  </Section>
+
+  <!-- How we work -->
+  <Section id="how" eyebrow="How we work" title="Discover, build, hand over">
+    <ol class="grid gap-5 md:grid-cols-3">
+      {
+        steps.map((s, i) => (
+          <li class="relative rounded-[var(--radius-card)] border border-line p-7">
+            <p class="font-display text-7xl font-semibold leading-none text-signal">{i + 1}</p>
+            <h3 class="mt-6 font-display text-h3 font-semibold">{s.title}</h3>
+            <p class="mt-2 text-ink-2">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <!-- Remote team -->
+  <section aria-labelledby="remote-title" class="container-x pb-8">
+    <div class="grid gap-10 rounded-[2rem] bg-moss p-8 text-paper sm:p-12 lg:grid-cols-[1fr_1.2fr] lg:items-center on-dark">
+      <div>
+        <p class="eyebrow !text-paper/65">Honest about where we are</p>
+        <h2 id="remote-title" class="mt-3 text-h2 text-paper">A remote team, working UK hours</h2>
+      </div>
+      <div class="grid gap-4 text-lead text-paper/85">
+        <p>We are not a high-street agency with an office to visit, and we do not pretend to be. We work remotely, {site.hours}, by video call, email and WhatsApp.</p>
+        <p>That is how we keep prices fair while you still get a named person to talk to, replies the same working day, and work written in UK English.</p>
+        <a href="/about/" class="font-semibold text-paper underline decoration-paper/40 underline-offset-4 hover:decoration-signal">How we work with UK clients</a>
+      </div>
+    </div>
+  </section>
+
+  {
+    caseStudies.length > 0 && (
+      <Section id="results" eyebrow="Client work" title="Recent projects">
+        <ul class="grid gap-5 md:grid-cols-3">
+          {caseStudies.map((c) => (
+            <li>
+              <a href={c.data.path} class="card card-link block h-full p-7">
+                <h3 class="font-display text-h3 font-semibold">{c.data.h1}</h3>
+                <p class="mt-2 text-ink-2">{c.data.description}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  <section class="container-x py-16 sm:py-20"><DataHandling /></section>
+
+  {
+    latestPosts.length > 0 && (
+      <Section id="guides" eyebrow="From the blog" title="Guides for building with software and AI" intro="In-depth, practical and written for UK businesses.">
+        <PostCards posts={latestPosts} />
+        <a href="/blog/" class="btn btn-secondary mt-8">Read all guides</a>
+      </Section>
+    )
+  }
+
+  <Section id="faq" eyebrow="FAQ" title="Questions UK business owners ask us" tone="alt">
+    <Faq items={faq.map((f) => ({ q: f.q, a: fillPrices(f.a) }))} />
+  </Section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .copy-block {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition:
+      opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0.6s;
+  }
+  .copy-block.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+      visibility 0s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .copy-block {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Keep the hero copy in sync with the showcase slide.
+  const blocks = [...document.querySelectorAll<HTMLElement>('[data-copy]')];
+  document.addEventListener('showcase:change', (e) => {
+    const index = (e as CustomEvent<{ index: number }>).detail.index;
+    blocks.forEach((b, i) => {
+      const on = i === index;
+      b.classList.toggle('is-active', on);
+      if (on) b.removeAttribute('aria-hidden');
+      else b.setAttribute('aria-hidden', 'true');
+    });
+  });
+</script>

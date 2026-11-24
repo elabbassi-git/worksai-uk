@@ -1,0 +1,288 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import CtaButtons from '@/components/CtaButtons.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Faq from '@/components/Faq.astro';
+import PriceBox from '@/components/PriceBox.astro';
+import ProcessExplorer from '@/components/ProcessExplorer.astro';
+import ScenarioPlayer from '@/components/ScenarioPlayer.astro';
+import ServiceHero, { type Kind } from '@/components/ServiceHero.astro';
+import DetailsExplorer from '@/components/DetailsExplorer.astro';
+import OfferingsExplorer from '@/components/OfferingsExplorer.astro';
+import { diagramFor } from '@/data/diagrams';
+import { publishedServices, publishedCourses, publishedLessons, publishedRegistry, publishedPosts } from '@/lib/content';
+import PostCards from '@/components/PostCards.astro';
+import { service as serviceSchema, faqPage } from '@/lib/schema';
+import { fillPrices, priceSummary, courses as coursePrices, formatGBP, type ServicePriceKey } from '@/data/pricing';
+
+interface Props {
+  entry: CollectionEntry<'services'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const faqFilled = d.faq.map((f) => ({ q: fillPrices(f.q), a: fillPrices(f.a) }));
+const { Content, headings } = await render(entry);
+const priceKey = d.priceKey as ServicePriceKey;
+
+const all = await publishedServices();
+const registry = await publishedRegistry();
+const children = all.filter((s) => s.data.parent === d.path);
+const parent = d.parent ? all.find((s) => s.data.path === d.parent) : undefined;
+const related = d.related.map((p) => all.find((s) => s.data.path === p)).filter((s): s is NonNullable<typeof s> => !!s);
+const course = d.course ? (await publishedCourses()).find((c) => c.id === d.course) : undefined;
+const lesson = course ? (await publishedLessons()).find((l) => l.data.course === course.id) : undefined;
+const problemLabel = registry.get(d.problemPage);
+const allPosts = await publishedPosts();
+const posts = [...allPosts.filter((p) => p.data.service === d.path || (d.parent && p.data.service === d.parent)), ...allPosts.filter((p) => p.data.service !== d.path)].slice(0, 3);
+
+const groupCrumb = { services: { name: 'Services', path: '/services/' }, business: { name: 'Business Solutions', path: '/business/' }, 'ai-shop': { name: 'AI Shop', path: '/ai-shop/' } }[d.group];
+const crumbs = [groupCrumb, ...(parent ? [{ name: parent.data.navLabel, path: parent.data.path }] : []), { name: d.navLabel, path: d.path }];
+const description = fillPrices(d.description);
+const schema = [serviceSchema({ name: d.navLabel, description, path: d.path, serviceType: d.serviceType, priceKey }), faqPage(faqFilled)];
+const diagram = diagramFor(entry.id, d.workflow.length);
+const heroKinds: Record<string, Kind> = {
+  'saas-development': 'saas',
+  'ai-receptionist': 'call',
+  whatsapp: 'chat',
+  'ai-agents': 'agents',
+  'local-seo': 'maps',
+  'ai-web-development': 'aiapp',
+  'website-design-seo': 'web',
+  'online-booking-system': 'booking',
+  'automated-invoice-reminders': 'invoice',
+};
+const heroKind = heroKinds[entry.id];
+const deliverableIcons = [
+  'M13 2 4 14h7l-1 8 9-12h-7l1-8Z',
+  'M4 19.5V5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2Zm0 0A2 2 0 0 0 6 22h12',
+  'M3 6h18M6 12h12M10 18h4',
+  'M4 7h16v13H4zM8 3v4M16 3v4M4 11h16',
+  'M7 8h10M7 12h6m-9 9 3-3h11a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16Z',
+];
+const wa = d.whatsappMessage ?? `Hello Works AI, I'm interested in ${d.navLabel}.`;
+---
+
+<BaseLayout title={d.title} description={d.description} path={d.path} breadcrumbs={crumbs} schema={schema} updated={d.updated} whatsappMessage={wa}>
+  <!-- 1. Hero -->
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top_right,black,transparent_65%)]"></div>
+    <div class="container-x relative grid gap-12 pb-16 pt-10 sm:pb-24 sm:pt-14 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+      <div>
+        <p class="eyebrow reveal">{groupCrumb.name}{parent && ` / ${parent.data.navLabel}`}</p>
+        <h1 class="mt-5 text-h1">{d.h1}</h1>
+        <p class="reveal reveal-2 mt-6 max-w-2xl text-lead text-ink-2" data-speakable>{fillPrices(d.answer)}</p>
+        <CtaButtons whatsappMessage={wa} class="reveal reveal-3 mt-9" />
+        {heroKind && (
+          <p class="reveal reveal-4 mt-7 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line pt-5 text-sm text-ink-2">
+            <span class="font-display text-lg font-semibold text-ink">{priceSummary(priceKey)}</span>
+            <a href="#cost" class="link">What's included in the price</a>
+          </p>
+        )}
+      </div>
+      {
+        heroKind ? (
+          <div class="reveal reveal-3">
+            <ServiceHero kind={heroKind} label={`how the ${d.navLabel} works`} />
+          </div>
+        ) : (
+          <aside class="reveal reveal-4 card p-6 sm:p-7" aria-label="At a glance">
+            <p class="eyebrow">At a glance</p>
+            <p class="mt-3 font-display text-2xl font-semibold leading-tight">{priceSummary(priceKey)}</p>
+            <a href="#cost" class="link mt-1 inline-block text-sm">What's included in the price</a>
+            <ol class="mt-6 grid gap-3 border-t border-line pt-5">
+              {d.steps.map((s, i) => (
+                <li class="flex gap-3">
+                  <span class="grid size-7 shrink-0 place-items-center rounded-full bg-ink font-mono text-xs text-paper">{i + 1}</span>
+                  <span class="font-medium">{s.title}</span>
+                </li>
+              ))}
+            </ol>
+          </aside>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- 2. The problem -->
+  <Section id="problem" number="01" eyebrow="The problem" title="Sound familiar?" tone="alt">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1fr]">
+      <div class="grid gap-4 text-lead text-ink-2">
+        {d.problem.map((p) => <p>{fillPrices(p)}</p>)}
+      </div>
+      {
+        d.problemQuotes.length > 0 && (
+          <figure class="grid gap-3 self-start">
+            <figcaption class="eyebrow">You might recognise these</figcaption>
+            {d.problemQuotes.map((q, i) => (
+              <blockquote class:list={['max-w-md rounded-2xl rounded-bl-sm bg-card px-5 py-4 font-display text-xl leading-snug shadow-[var(--shadow-card)]', i % 2 === 1 && 'ml-auto rounded-bl-2xl rounded-br-sm']}>
+                “{q}”
+              </blockquote>
+            ))}
+          </figure>
+        )
+      }
+    </div>
+  </Section>
+
+  <!-- 3. What we do -->
+  <Section id="what-we-do" number="02" eyebrow="What we do" title="What you get" intro={fillPrices(d.answer)}>
+    <ul class="deliverables grid gap-4 lg:grid-cols-6" data-count={d.deliverables.length}>
+      {
+        d.deliverables.map((x, i) => (
+          <li class:list={['card group relative overflow-hidden p-7', i === 0 && 'is-feature']} style={`--i:${i}`}>
+            <span class="icon-tile grid size-12 place-items-center rounded-2xl" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24"><path d={deliverableIcons[i % deliverableIcons.length]} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
+            <h3 class="mt-5 font-display text-h3 font-semibold">{x.title}</h3>
+            <p class="mt-2 text-ink-2">{fillPrices(x.text)}</p>
+            <span class="pointer-events-none absolute -right-3 -top-6 font-display text-[7rem] font-semibold leading-none opacity-[0.06]" aria-hidden="true">{i + 1}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <!-- See it in action -->
+  <section id="example" aria-label="See it in action" class="relative overflow-hidden bg-paper-2/70 py-16 sm:py-24">
+    <div aria-hidden="true" class="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"></div>
+    <div class="container-x relative">
+      <p class="eyebrow mb-8 flex items-center gap-3"><span class="inline-grid h-7 place-items-center rounded-full bg-signal px-3 text-[0.72rem] text-ink">Live demo</span>See it in action</p>
+      <ScenarioPlayer id="scenario" scenario={d.scenario} />
+    </div>
+  </section>
+
+  {
+    d.offerings && d.offerings.length > 0 && (
+      <Section id="what-we-build" eyebrow="What we build" title="Pick a product type to see what's inside">
+        <OfferingsExplorer items={d.offerings} />
+      </Section>
+    )
+  }
+
+  <!-- The details: master-detail (topics left, full content right) -->
+  <Section id="details" eyebrow="In detail" title={`${d.navLabel}: the details`} tone={d.offerings?.length ? 'alt' : 'paper'}>
+    <DetailsExplorer headings={headings}><Content /></DetailsExplorer>
+  </Section>
+
+  {
+    children.length > 0 && (
+      <Section id="options" eyebrow="Choose where it works" title={`${d.navLabel}: the options`} tone="alt">
+        <ul class="grid gap-5 md:grid-cols-2">
+          {children.map((c) => (
+            <li>
+              <a href={c.data.path} class="card card-link group flex h-full flex-col p-7">
+                <h3 class="font-display text-h3 font-semibold">{c.data.navLabel}</h3>
+                <p class="mt-2 flex-1 text-ink-2">{fillPrices(c.data.answer)}</p>
+                <p class="mt-5 flex items-center justify-between border-t border-line pt-4 text-sm">
+                  <span class="font-semibold">{priceSummary(c.data.priceKey as ServicePriceKey)}</span>
+                  <span class="link font-semibold">See how the {c.data.navLabel} works</span>
+                </p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  <!-- 4. How it works -->
+  <Section id="how-it-works" number="03" eyebrow="How it works" title={`How it works: ${d.navLabel}, step by step`} intro={`Watch the ${d.navLabel} work, stage by stage. It plays on its own; click any step to jump. Illustrative example.`} tone={children.length ? 'paper' : 'alt'}>
+    <ProcessExplorer id="process" stages={d.workflow} diagram={diagram} label={`${d.navLabel}: live workflow`} />
+
+    <h3 class="mt-16 font-display text-h3 font-semibold" data-reveal>How we get you there: audit, build, run</h3>
+    <ol class="steps-line relative mt-6 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line md:grid-cols-3">
+      {
+        d.steps.map((s, i) => (
+          <li class="bg-card p-7" data-reveal style={`--i:${i}`}>
+            <p class="font-display text-6xl font-semibold text-signal">{i + 1}</p>
+            <h4 class="mt-4 font-display text-h3 font-semibold">{s.title}</h4>
+            <p class="mt-2 text-ink-2">{fillPrices(s.text)}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <!-- 5. What it costs -->
+  <Section id="cost" number="04" eyebrow="What it costs" title="One fixed price. Paid once. Yours to keep." intro="No monthly fees, no retainer, no lock-in. You see the full price before any work begins.">
+    <PriceBox priceKey={priceKey} />
+  </Section>
+
+  <!-- 6. Do it yourself instead -->
+  <Section id="diy" number="05" eyebrow="Do it yourself instead" title="Prefer to set it up yourself?" tone="alt">
+    {
+      course ? (
+        <div class="card grid gap-6 p-7 sm:grid-cols-[1fr_auto] sm:items-center sm:p-9">
+          <div>
+            <p class="eyebrow">Course · {course.data.format} · one-time payment</p>
+            <h3 class="mt-3 font-display text-h3 font-semibold"><a href={course.data.path} class="hover:text-signal-deep">{course.data.name}</a></h3>
+            <p class="mt-2 max-w-2xl text-ink-2">{fillPrices(course.data.answer)}</p>
+            {lesson && <a href={lesson.data.path} class="link mt-4 inline-block font-semibold">Read the free lesson: {lesson.data.h1}</a>}
+          </div>
+          <div class="sm:text-right">
+            <p class="font-display text-4xl font-semibold">{formatGBP(coursePrices[course.id]!.price)}</p>
+            <a href={course.data.path} class="btn btn-secondary mt-3">View the course</a>
+          </div>
+        </div>
+      ) : (
+        <a href="/ai-shop/training/" class="card card-link block p-7 sm:p-9">
+          <p class="eyebrow">AI Training & Coaching</p>
+          <h3 class="mt-3 font-display text-h3 font-semibold">Learn to do it in-house</h3>
+          <p class="mt-2 max-w-2xl text-ink-2">
+            If you would rather build skills in your own team, see our courses and workshops. Each one is a one-time payment.
+          </p>
+          <p class="link mt-4 font-semibold">Browse AI courses and workshops</p>
+        </a>
+      )
+    }
+  </Section>
+
+  <!-- 8. Related -->
+  <Section id="related" number="06" eyebrow="Related" title="Often used together" >
+    <ul class:list={['grid gap-4', related.length === 2 ? 'md:grid-cols-2' : related.length === 1 ? '' : 'md:grid-cols-3']}>
+      {
+        related.map((r) => (
+          <li>
+            <a href={r.data.path} class="card card-link flex h-full flex-col p-6">
+              <h3 class="font-display text-lg font-semibold">{r.data.navLabel}</h3>
+              <p class="mt-2 flex-1 text-ink-2">{r.data.navBlurb}</p>
+              <span class="link mt-4 text-sm font-semibold">Explore {r.data.navLabel}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      problemLabel && (
+        <p class="mt-8 text-ink-2">
+          Starting from scratch? Read{' '}
+          <a href={d.problemPage} class="link font-semibold">
+            {problemLabel.toLowerCase().startsWith('how') ? problemLabel : `our guide: ${problemLabel}`}
+          </a>
+          , or compare everything on the <a href="/pricing/" class="link font-semibold">Works AI pricing page</a>.
+        </p>
+      )
+    }
+  </Section>
+
+  <!-- From the blog -->
+  {
+    posts.length > 0 && (
+      <Section id="guides" eyebrow="From the blog" title="Guides worth reading first">
+        <PostCards posts={posts} />
+      </Section>
+    )
+  }
+
+  <!-- 8. Service FAQ: exactly 5 questions, just above the final CTA -->
+  <Section id="faq" number="07" eyebrow="FAQ" title={`5 questions about the ${d.navLabel}`} intro="Straight answers on set-up time, integrations, results and the things people worry about." tone="alt">
+    <Faq items={faqFilled} numbered />
+    <p class="mt-8 text-ink-2">More general questions about working with us? See the <a href="/faq/" class="link font-semibold">Works AI FAQ</a>.</p>
+  </Section>
+
+  <!-- 9. Final CTA -->
+  <CtaBand whatsappMessage={wa} />
+</BaseLayout>

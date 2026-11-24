@@ -1,0 +1,53 @@
+---
+import HubLayout from '@/layouts/HubLayout.astro';
+import Flow from '@/components/blog/Flow.astro';
+import { publishedCourses } from '@/lib/content';
+
+const courses = await publishedCourses();
+---
+
+<HubLayout
+  title="AI Shop: AI Courses and Workshops | Works AI"
+  description="Learn to set up AI in your business yourself with practical, one-time-payment courses and workshops from Works AI. Free lessons inside. Or book a free AI audit."
+  path="/ai-shop/"
+  eyebrow="AI Shop"
+  h1="Learn to build it yourself, paid once"
+  answer="Practical courses and workshops that teach you to set up the same systems we build for clients. Every course is a single payment, with lifetime access subject to our access terms, and a free lesson to try first."
+  cardsTitle="What's in the AI Shop"
+  cards={[
+    {
+      title: 'AI Training & Coaching',
+      href: '/ai-shop/training/',
+      text: 'Practical video courses, each tied to one of our services, plus live workshops for teams.',
+      price: `${courses.length} courses available now`,
+      children: courses.map((c) => ({ title: c.data.name, href: c.data.path })),
+    },
+  ]}
+  faq={[
+    { q: 'Are the courses a one-time payment?', a: 'Yes. Every course is paid once, with lifetime access subject to our access terms. Nothing renews.' },
+    { q: 'Can I try a course before buying?', a: 'Yes. Each live course has a full free lesson published on the site, so you can check the level and style first.' },
+    { q: 'Do I need technical skills?', a: 'Most courses are written for business owners with no technical background. The developer course says so clearly.' },
+    { q: 'Can my team take a workshop together?', a: 'Yes. We run live workshops for teams and leadership groups. Contact us with your team size and goals.' },
+  ]}
+>
+  <div slot="wide" class="not-prose mb-10">
+    <h2 class="font-display text-h2 font-semibold">How learning with Works AI works</h2>
+  <Flow
+    steps={[
+      { title: 'Read a free lesson', text: 'Check the level and style first' },
+      { title: 'Buy once', text: 'One-time payment, no renewals' },
+      { title: 'Follow short lessons', text: 'Videos plus written notes' },
+      { title: 'Build as you go', text: 'Templates for your own business' },
+      { title: 'Upgrade if you like', text: 'We can build it for you' },
+    ]}
+  />
+  </div>
+  <h2>Learn it, or have it built</h2>
+  <p>
+    Every course matches one of our services. Take the course if you like to understand how things work and have a few hours to spare. Choose the service if you would rather we build it for you, for a one-time fixed price.
+  </p>
+  <h2>No subscriptions, anywhere</h2>
+  <p>
+    Courses are paid once. So is everything we build. See every price on the <a href="/pricing/">pricing page</a>, explore our <a href="/services/">services</a>, or book a <a href="/free-ai-audit/">free 30-minute AI audit</a>.
+  </p>
+</HubLayout>

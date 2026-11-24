@@ -1,0 +1,48 @@
+---
+import { render } from 'astro:content';
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import ProblemLayout from '@/layouts/ProblemLayout.astro';
+import CourseLayout from '@/layouts/CourseLayout.astro';
+import LessonLayout from '@/layouts/LessonLayout.astro';
+import ProseLayout from '@/layouts/ProseLayout.astro';
+import {
+  publishedServices,
+  publishedProblems,
+  publishedCourses,
+  publishedLessons,
+  publishedPages,
+  publishedCaseStudies,
+} from '@/lib/content';
+import type { GetStaticPaths } from 'astro';
+
+/**
+ * One route for every content-collection page. Drafts never reach getStaticPaths,
+ * so they are absent from dist/, the sitemap and every generated link.
+ */
+export const getStaticPaths = (async () => {
+  const p = (path: string) => path.replace(/^\/|\/$/g, '');
+  return [
+    ...(await publishedServices()).map((entry) => ({ params: { path: p(entry.data.path) }, props: { kind: 'service' as const, entry } })),
+    ...(await publishedProblems()).map((entry) => ({ params: { path: p(entry.data.path) }, props: { kind: 'problem' as const, entry } })),
+    ...(await publishedCourses()).map((entry) => ({ params: { path: p(entry.data.path) }, props: { kind: 'course' as const, entry } })),
+    ...(await publishedLessons()).map((entry) => ({ params: { path: p(entry.data.path) }, props: { kind: 'lesson' as const, entry } })),
+    ...(await publishedPages()).map((entry) => ({ params: { path: p(entry.data.path) }, props: { kind: 'page' as const, entry } })),
+    ...(await publishedCaseStudies()).map((entry) => ({ params: { path: p(entry.data.path) }, props: { kind: 'case' as const, entry } })),
+  ];
+}) satisfies GetStaticPaths;
+
+const { kind, entry } = Astro.props as any;
+const Body = kind === 'page' || kind === 'case' ? (await render(entry)).Content : null;
+---
+
+{kind === 'service' && <ServiceLayout entry={entry} />}
+{kind === 'problem' && <ProblemLayout entry={entry} />}
+{kind === 'course' && <CourseLayout entry={entry} />}
+{kind === 'lesson' && <LessonLayout entry={entry} />}
+{
+  (kind === 'page' || kind === 'case') && Body && (
+    <ProseLayout title={entry.data.title} description={entry.data.description} h1={entry.data.h1} path={entry.data.path} updated={entry.data.updated} legalReview={entry.data.legalReview}>
+      <Body />
+    </ProseLayout>
+  )
+}

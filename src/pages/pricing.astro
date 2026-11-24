@@ -1,0 +1,144 @@
+---
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import CtaButtons from '@/components/CtaButtons.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Faq from '@/components/Faq.astro';
+import { services, courses as coursePrices, marketComparison as m, vatNote, courseCreditTowardsService, pricingModel, formatGBP, fillPrices, type ServicePrice, type ServicePriceKey } from '@/data/pricing';
+import { publishedServices, publishedCourses } from '@/lib/content';
+import { faqPage } from '@/lib/schema';
+import { isSet } from '@/config/site';
+
+const svc = await publishedServices();
+const courses = await publishedCourses();
+const pageFor = (key: string) => svc.find((s) => s.data.priceKey === key && !s.data.parent)?.data.path ?? svc.find((s) => s.data.priceKey === key)?.data.path;
+
+const rows = (Object.entries(services) as [ServicePriceKey, ServicePrice][]).map(([key, p]) => ({ key, p, href: key === 'freeAudit' || key === 'writtenAudit' ? '/free-ai-audit/' : pageFor(key) }));
+
+const faq = [
+  { q: 'Are there really no monthly fees?', a: 'Yes. Everything we build is a one-time payment. We do not charge retainers, subscriptions or monthly management fees.' },
+  { q: 'When do I pay?', a: 'Payment dates are set out in your written proposal before any work starts.' },
+  { q: 'What does “from” mean?', a: 'It is the price for a typical small business set-up. If you need more, such as extra channels, languages or integrations, we quote a fixed price after the free audit, before any work starts.' },
+  { q: 'What about hosting and other running costs?', a: 'Some systems need hosting, AI usage, WhatsApp message fees or software licences. These run in accounts in your name and you pay the providers directly, at their own rates. We never mark them up, and we estimate them for you before you commit.' },
+  { q: 'What if I need changes after launch?', a: 'You own everything and can change it yourself or use anyone you like. If you want us to do it, we quote each change as a one-off piece of work.' },
+  { q: 'Do your prices include VAT?', a: 'Please see the VAT note on this page. If you are unsure how VAT applies to your business, ask us before you sign and check with your accountant.' },
+  { q: 'How do I pay for courses?', a: 'Courses are paid once, through our checkout partner, which handles payment and VAT. They are not subscriptions.' },
+];
+---
+
+<BaseLayout
+  title="Pricing: One-Time Fixed Prices | Works AI"
+  description="One-time prices, no monthly fees: websites [[price:website.build]], AI assistants from [[price:aiAssistant.build]], SaaS platforms quoted after discovery. Book a free 30-minute AI audit."
+  path="/pricing/"
+  breadcrumbs={[{ name: 'Pricing', path: '/pricing/' }]}
+  schema={[faqPage(faq)]}
+>
+  <PageHero eyebrow="Pricing · one-time" title="One-time prices. No monthly fees. You own it." intro="Every service is a single, fixed payment agreed before work starts. No retainers, no subscriptions, no lock-in: the code, accounts and data are yours.">
+    <CtaButtons class="mt-9 justify-center" />
+  </PageHero>
+
+  <Section id="services" eyebrow="Done for you" title="Services" tone="alt">
+    <div class="card overflow-x-auto">
+      <table class="w-full min-w-[32rem] text-left">
+        <caption class="sr-only">Works AI service prices</caption>
+        <thead class="bg-paper-2/70 text-sm text-ink-3">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-semibold">Service</th>
+            <th scope="col" class="px-6 py-4 font-semibold">One-time price</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          {
+            rows.map(({ key, p, href }) => (
+              <tr class="align-top">
+                <th scope="row" class="px-6 py-5 font-medium">
+                  {href ? <a href={href} class="hover:text-signal-deep hover:underline">{p.name}</a> : p.name}
+                  <details class="mt-1 text-sm font-normal text-ink-3">
+                    <summary class="inline-flex min-h-8 items-center underline decoration-line-strong underline-offset-4 hover:text-ink">What's included</summary>
+                    <ul class="mt-2 grid gap-1">{p.includes.map((i) => <li>+ {i}</li>)}</ul>
+                    <ul class="mt-2 grid gap-1">{p.excludes.map((i) => <li>– Not included: {i}</li>)}</ul>
+                  </details>
+                </th>
+                <td class="px-6 py-5 font-display text-lg font-semibold">
+                  {p.onRequest || p.build == null ? 'Price on request' : p.build === 0 ? 'Free' : `${p.from ? 'from ' : ''}${formatGBP(p.build)}`}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section id="why" eyebrow="How we charge" title="Why one-time pricing">
+    <ul class="grid gap-4 md:grid-cols-3">
+      {
+        [
+          ['Pay once', 'One fixed price, agreed in writing before any work starts. No retainers, no subscriptions, no monthly management fees.'],
+          ['Own everything', 'Code, accounts, data and domains are set up in your name. You can take them anywhere.'],
+          ['No lock-in', 'We document and hand over everything, so you are never dependent on us to keep it running.'],
+        ].map(([t, d]) => (
+          <li class="card p-7">
+            <h3 class="font-display text-h3 font-semibold">{t}</h3>
+            <p class="mt-2 text-ink-2">{d}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-6 text-ink-2">Running costs such as hosting, AI usage or WhatsApp message fees are paid by you directly to the provider, at their own rates, never marked up by us. Post-launch support: {pricingModel.postLaunchSupport}.</p>
+    <p class="mt-3 text-ink-2">Read more: <a href="/blog/one-time-payment-vs-agency-retainer/" class="link font-semibold">one-time payment vs agency retainer</a> and <a href="/blog/how-much-does-it-cost-to-build-a-saas-platform-uk/" class="link font-semibold">what it costs to build a SaaS platform in the UK</a>.</p>
+  </Section>
+
+  <Section id="courses" eyebrow="Learn it yourself" title="Courses (one-time payment)" tone="alt">
+    <ul class="grid gap-4 md:grid-cols-3">
+      {
+        courses.map((c) => (
+          <li>
+            <a href={c.data.path} class="card card-link flex h-full flex-col p-6">
+              <h3 class="font-display text-lg font-semibold">{c.data.name}</h3>
+              <p class="mt-1 flex-1 text-sm text-ink-3">{c.data.format}</p>
+              <p class="mt-4 font-display text-2xl font-semibold">{formatGBP(coursePrices[c.id]!.price)}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-4 text-sm text-ink-3">
+      Courses are never subscriptions.{courseCreditTowardsService && ' If you later order the matching service, we deduct the course price from the build.'} <a href="/ai-shop/training/" class="link">See all AI courses and workshops</a>.
+    </p>
+  </Section>
+
+  <Section id="compare" eyebrow="Context" title="How our prices compare">
+    <div class="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-start">
+      <div class="prose prose-lg prose-works">
+        <p>
+          We publish our prices because many agencies don't. According to {m.study}, {m.percentNotPublishingPrices}% of agencies don't publish prices. The same study found a median starting project of {formatGBP(m.medianStartingProject)} and a median chatbot build of {formatGBP(m.medianChatbotBuild)}.
+        </p>
+        <p>Our AI assistant build starts {fillPrices('from [[price:aiAssistant.build]]')}, paid once, with no monthly fee.</p>
+        <p class="text-sm">
+          Source: {isSet(m.sourceLink) ? <a href={m.sourceLink} rel="noopener">TrustedAIAgencies study, reported by IT Brief UK</a> : <span>TrustedAIAgencies study, reported by IT Brief UK {m.sourceLink}</span>}
+        </p>
+      </div>
+      <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
+        <div class="bg-card p-5"><dt class="text-sm text-ink-3">Don't publish prices</dt><dd class="mt-1 font-display text-3xl font-semibold">{m.percentNotPublishingPrices}%</dd></div>
+        <div class="bg-card p-5"><dt class="text-sm text-ink-3">Median starting project</dt><dd class="mt-1 font-display text-3xl font-semibold">{formatGBP(m.medianStartingProject)}</dd></div>
+        <div class="bg-card p-5"><dt class="text-sm text-ink-3">Median chatbot build</dt><dd class="mt-1 font-display text-3xl font-semibold">{formatGBP(m.medianChatbotBuild)}</dd></div>
+        <div class="bg-card p-5"><dt class="text-sm text-ink-3">Works AI monthly fees</dt><dd class="mt-1 font-display text-3xl font-semibold">None</dd></div>
+      </dl>
+    </div>
+  </Section>
+
+  <Section id="vat" eyebrow="The small print" title="VAT and payment" tone="alt">
+    <div class="prose prose-lg prose-works prose-cols">
+      <p><strong>VAT:</strong> {vatNote}</p>
+      <p><strong>Payment terms:</strong> {'{{PAYMENT_TERMS}}'}</p>
+      <p>All prices are in pounds sterling (GBP). Every project starts with a written proposal that sets out the one-time price, what is included and the payment dates.</p>
+    </div>
+  </Section>
+
+  <Section id="faq" eyebrow="FAQ" title="Payment questions">
+    <Faq items={faq} />
+  </Section>
+  <CtaBand />
+</BaseLayout>

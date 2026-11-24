@@ -1,0 +1,129 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import CtaButtons from '@/components/CtaButtons.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Faq from '@/components/Faq.astro';
+import { publishedServices } from '@/lib/content';
+import { faqPage } from '@/lib/schema';
+import { fillPrices, priceSummary, type ServicePriceKey } from '@/data/pricing';
+
+interface Props {
+  entry: CollectionEntry<'problems'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const faqFilled = d.faq.map((f) => ({ q: fillPrices(f.q), a: fillPrices(f.a) }));
+const { Content, headings } = await render(entry);
+const all = await publishedServices();
+const services = d.services.map((p) => all.find((s) => s.data.path === p)).filter((s): s is NonNullable<typeof s> => !!s);
+const toc = headings.filter((h) => h.depth === 2);
+const wa = `Hello Works AI, I read your guide on ${d.keyword} and would like some advice.`;
+---
+
+<BaseLayout title={d.title} description={d.description} path={d.path} breadcrumbs={[{ name: d.h1, path: d.path }]} schema={d.faq.length ? [faqPage(faqFilled)] : []} updated={d.updated} whatsappMessage={wa}>
+  <div class="read-progress" aria-hidden="true"></div>
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_60%)]"></div>
+    <div class="container-x relative pb-14 pt-10 sm:pb-20 sm:pt-14">
+      <p class="eyebrow reveal">For {d.audience}</p>
+      <h1 class="mt-5 text-h1">{d.h1}</h1>
+      <p class="reveal reveal-2 mt-6 text-lead text-ink-2" data-speakable>{fillPrices(d.answer)}</p>
+      <CtaButtons whatsappMessage={wa} class="reveal reveal-3 mt-9" />
+    </div>
+  </section>
+
+  <div class="container-x grid gap-12 pb-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[14rem_minmax(0,1fr)_17rem]">
+    <aside class="hidden lg:block">
+      <nav aria-label="On this page" class="sticky top-28">
+        <p class="eyebrow">On this page</p>
+        <ol class="mt-4 grid gap-2 border-l border-line text-sm">
+          {toc.map((h) => <li><a href={`#${h.slug}`} class="-ml-px block border-l border-transparent py-1 pl-4 text-ink-2 hover:border-signal hover:text-ink">{h.text}</a></li>)}
+          <li><a href="#what-good-looks-like" class="-ml-px block border-l border-transparent py-1 pl-4 text-ink-2 hover:border-signal hover:text-ink">What good looks like</a></li>
+          <li><a href="#how-we-help" class="-ml-px block border-l border-transparent py-1 pl-4 text-ink-2 hover:border-signal hover:text-ink">How we can help</a></li>
+        </ol>
+      </nav>
+    </aside>
+    <article class="prose prose-lg prose-works max-w-3xl">
+      <Content />
+    </article>
+    <aside class="hidden xl:block" aria-label="Get help">
+      <div class="sticky top-28 grid gap-4">
+        <div class="card overflow-hidden p-5">
+          <p class="eyebrow">Free, no obligation</p>
+          <p class="mt-2 font-display text-lg font-semibold leading-snug">Get a free website & SEO check</p>
+          <p class="mt-1 text-sm text-ink-2">A person looks at your site and emails a short report within 2 working days.</p>
+          <a href="/free-seo-check/" class="btn btn-primary mt-4 w-full !min-h-11 text-sm">Get my free check</a>
+        </div>
+        <div class="card p-5">
+          <p class="eyebrow">Services for this</p>
+          <ul class="mt-3 grid gap-1">
+            {services.map((s) => (
+              <li>
+                <a href={s.data.path} class="flex min-h-10 items-center justify-between gap-2 rounded-lg px-2 text-sm font-semibold hover:bg-paper">
+                  {s.data.navLabel}
+                  <span aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <Section id="what-good-looks-like" eyebrow="Checklist" title="What good looks like" tone="alt">
+    <ul class="grid gap-3 md:grid-cols-2">
+      {
+        d.goodLooksLike.map((g) => (
+          <li class="card flex gap-4 p-5">
+            <svg class="mt-1 shrink-0 text-moss" width="20" height="20" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" />
+            </svg>
+            <span class="text-ink-2">{g}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section id="how-we-help" eyebrow="How we can help" title="Services that fix this">
+    <ul class="grid gap-5 md:grid-cols-3">
+      {
+        services.map((s) => (
+          <li>
+            <a href={s.data.path} class="card card-link flex h-full flex-col p-7">
+              <h3 class="font-display text-h3 font-semibold">{s.data.navLabel}</h3>
+              <p class="mt-2 flex-1 text-ink-2">{s.data.navBlurb}</p>
+              <p class="mt-5 border-t border-line pt-4 text-sm font-semibold">{priceSummary(s.data.priceKey as ServicePriceKey)}</p>
+              <span class="link mt-2 text-sm font-semibold">How our {s.data.navLabel} service works</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      d.path !== '/free-seo-check/' && (
+        <div class="card mt-10 grid gap-6 bg-signal-soft/50 p-7 sm:grid-cols-[1fr_auto] sm:items-center sm:p-9">
+          <div>
+            <h3 class="font-display text-h3 font-semibold">Start with a free website & SEO check</h3>
+            <p class="mt-2 text-ink-2">Send us your website address. We look at it ourselves and email a short, plain-English report within 2 working days.</p>
+          </div>
+          <a href="/free-seo-check/" class="btn btn-secondary">Get my free check</a>
+        </div>
+      )
+    }
+  </Section>
+
+  {
+    d.faq.length > 0 && (
+      <Section id="faq" eyebrow="FAQ" title="Common questions" tone="alt">
+        <Faq items={faqFilled} />
+      </Section>
+    )
+  }
+
+  <CtaBand whatsappMessage={wa} />
+</BaseLayout>

@@ -1,0 +1,56 @@
+---
+import HubLayout, { type HubCard } from '@/layouts/HubLayout.astro';
+import HowWeWork from '@/components/HowWeWork.astro';
+import { publishedServices } from '@/lib/content';
+import { priceSummary, type ServicePriceKey } from '@/data/pricing';
+
+const all = await publishedServices();
+const top = all.filter((s) => s.data.group === 'services' && !s.data.parent);
+const cards: HubCard[] = top.map((s) => ({
+  title: s.data.navLabel,
+  href: s.data.path,
+  text: s.data.navBlurb,
+  price: priceSummary(s.data.priceKey as ServicePriceKey),
+  children: all.filter((c) => c.data.parent === s.data.path).map((c) => ({ title: c.data.navLabel, href: c.data.path })),
+}));
+---
+
+<HubLayout
+  title="SaaS, AI and Local SEO Services UK | Works AI"
+  description="SaaS platforms, AI web apps, AI agents, WhatsApp assistants, AI receptionists and local SEO for UK businesses. One-time prices, no monthly fees. Free AI audit."
+  path="/services/"
+  eyebrow="Services"
+  h1="SaaS platforms, AI apps and assistants, built and handed over"
+  answer="We build production-ready SaaS platforms and AI web apps, plus AI agents that answer and book enquiries and local SEO that gets you on Google Maps. Every project is a one-time fixed price, and you own the result."
+  cardsTitle="Our services"
+  cards={cards}
+  faq={[
+    { q: 'Which service should I start with?', a: 'Start where you lose the most work. If you miss calls, an AI receptionist. If customers message you, a WhatsApp assistant. If people can’t find you, local SEO. The free 30-minute audit will tell you which.' },
+    { q: 'How long do projects take?', a: 'Assistants and automations usually take one to three weeks, websites three to five weeks, and a focused SaaS first release 8 to 16 weeks. Your proposal gives a specific timeline.' },
+    { q: 'Do I own what you build?', a: 'Yes. Code, accounts, domains and data are set up in your name, and we hand over documentation at launch.' },
+    { q: 'Do you work with businesses outside the UK?', a: 'Our site, prices and services are designed for UK businesses. We work UK business hours and price in pounds sterling.' },
+    { q: 'Can I combine services?', a: 'Yes. Many projects combine a platform or website with an AI assistant and automations. We quote the combination as one fixed, one-time price.' },
+  ]}
+>
+  <HowWeWork slot="wide" />
+  <h2>Platforms first</h2>
+  <p>
+    Our core work is <a href="/services/saas-development/">SaaS and platform development</a>: production-ready products with accounts, roles, payments and admin, designed and engineered end to end. When a product needs intelligence built in, our <a href="/services/ai-web-development/">AI web app development</a> adds search, document reading and assistants.
+  </p>
+  <h2>How our services fit together</h2>
+  <p>
+    Most small businesses have the same two problems: not enough of the right people find them, and the people who do find them don't always get a quick reply. Our services work on both ends.
+    <a href="/services/local-seo/">Local SEO and Google Maps</a> brings in more local enquiries. <a href="/services/ai-agents/">AI agents</a> make sure every one gets answered, booked and logged.
+  </p>
+  <h2>What every service includes</h2>
+  <ul>
+    <li>A free 30-minute audit before you commit to anything</li>
+    <li>One fixed price, paid once, with no monthly fees</li>
+    <li>Plain-English explanations, written in UK English</li>
+    <li>Hand-over rules so a person deals with anything sensitive</li>
+    <li>Full ownership of code, accounts and data, with no lock-in</li>
+  </ul>
+  <p>
+    Looking for websites, booking or invoicing? See our <a href="/business/">business solutions</a>. Want to learn to do it yourself? Browse <a href="/ai-shop/training/">AI training and courses</a>. All prices are on the <a href="/pricing/">pricing page</a>.
+  </p>
+</HubLayout>

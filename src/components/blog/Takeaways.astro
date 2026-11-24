@@ -1,0 +1,36 @@
+---
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+---
+
+<aside class="takeaways relative mt-8 overflow-hidden rounded-[1.4rem] bg-ink p-6 text-paper sm:p-8" aria-labelledby="takeaways-title">
+  <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-signal/30 blur-2xl"></div>
+  <p id="takeaways-title" class="eyebrow relative !text-paper/65">Key takeaways</p>
+  <ol class="relative mt-4 grid gap-3">
+    {
+      items.map((t, i) => (
+        <li class="takeaway flex gap-3" style={`--i:${i}`}>
+          <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-signal font-mono text-xs text-ink">{i + 1}</span>
+          <span class="text-paper/90">{t}</span>
+        </li>
+      ))
+    }
+  </ol>
+</aside>
+
+<style>
+  @media (prefers-reduced-motion: no-preference) {
+    .takeaway {
+      animation: tk-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      animation-delay: calc(0.25s + var(--i) * 0.12s);
+    }
+  }
+  @keyframes tk-in {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+  }
+</style>

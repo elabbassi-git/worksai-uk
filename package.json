@@ -1,0 +1,40 @@
+{
+  "name": "worksai-uk",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/og.ts",
+    "preview": "astro preview",
+    "check": "node scripts/check.ts",
+    "qa": "npm run build && npm run check",
+    "indexnow": "node scripts/indexnow.ts",
+    "typecheck": "astro check",
+    "verify": "astro check && npm run build && npm run check",
+    "test:responsive": "node scripts/responsive.ts"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.10",
+    "@astrojs/mdx": "^8.1.6",
+    "@astrojs/rss": "^4.0.19",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "^7.4.13",
+    "tailwindcss": "^4.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@fontsource/inter": "^5.3.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^26.6.6",
+    "node-html-parser": "^9.0.7",
+    "puppeteer-core": "^25.18.1",
+    "satori": "^0.63.2",
+    "typescript": "^6.0.3"
+  }
+}

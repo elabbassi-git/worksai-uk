@@ -1,0 +1,88 @@
+---
+/** Animated step diagram: nodes connected by drawing lines. Vertical on mobile, horizontal on wide screens. */
+interface Props {
+  steps: { title: string; text?: string }[];
+  caption?: string;
+}
+const { steps, caption } = Astro.props;
+---
+
+<figure class="flow not-prose my-10 rounded-[1.4rem] border border-line bg-card p-5 shadow-[var(--shadow-card)] sm:p-7" style={`--n:${steps.length}`}>
+  <ol class="flow-list grid gap-0 md:gap-3" style="grid-template-columns: var(--cols, 1fr);">
+    {
+      steps.map((s, i) => (
+        <li class="flow-step relative flex gap-4 pb-6 md:flex-col md:pb-0" style={`--i:${i}`}>
+          <span class="flow-node relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-ink font-mono text-sm text-paper">{i + 1}</span>
+          {i < steps.length - 1 && <span class="flow-line" aria-hidden="true" />}
+          <div>
+            <p class="font-display font-semibold leading-snug text-ink">{s.title}</p>
+            {s.text && <p class="mt-1 text-sm leading-snug text-ink-2">{s.text}</p>}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  {caption && <figcaption class="mt-5 border-t border-line pt-3 text-sm text-ink-3">{caption}</figcaption>}
+</figure>
+
+<style>
+  .flow-line {
+    position: absolute;
+    left: 1.2rem;
+    top: 2.5rem;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(var(--color-signal), var(--color-line));
+    transform-origin: top;
+  }
+  @media (min-width: 768px) {
+    .flow-list {
+      --cols: repeat(var(--n), minmax(0, 1fr));
+    }
+    .flow-line {
+      left: 2.5rem;
+      right: -0.75rem;
+      top: 1.2rem;
+      bottom: auto;
+      width: auto;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-signal), var(--color-line));
+      transform-origin: left;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .flow-line {
+        animation: flow-draw linear both;
+        animation-timeline: view();
+        animation-range: entry 30% cover 50%;
+      }
+      .flow-node {
+        animation: flow-pop linear both;
+        animation-timeline: view();
+        animation-range: entry 15% cover 35%;
+      }
+    }
+    .flow-step:hover .flow-node {
+      background: var(--color-signal);
+      color: var(--color-ink);
+      transform: scale(1.08);
+    }
+    .flow-node {
+      transition:
+        background-color 0.2s,
+        transform 0.2s;
+    }
+  }
+  @keyframes flow-draw {
+    from {
+      transform: scale(0);
+    }
+  }
+  @keyframes flow-pop {
+    from {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+  }
+</style>

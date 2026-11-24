@@ -1,0 +1,23 @@
+---
+interface Props {
+  type?: 'tip' | 'warning' | 'key' | 'example';
+  title?: string;
+}
+const { type = 'tip', title } = Astro.props;
+const meta = {
+  tip: { label: 'Tip', icon: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z', cls: 'border-moss/40 bg-moss-soft/50', ic: 'bg-moss text-paper' },
+  warning: { label: 'Watch out', icon: 'M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z', cls: 'border-signal/50 bg-signal-soft/40', ic: 'bg-signal text-ink' },
+  key: { label: 'Key point', icon: 'M15 7a4 4 0 1 1-7.5 2L3 13.5V17h3.5v-2h2v-2h2l1-1A4 4 0 0 1 15 7Z', cls: 'border-ink/20 bg-card', ic: 'bg-ink text-paper' },
+  example: { label: 'Illustrative example', icon: 'M4 6h16M4 12h10M4 18h7', cls: 'border-line-strong bg-paper-2/70', ic: 'bg-paper-3 text-ink' },
+}[type];
+---
+
+<aside class:list={['callout not-prose my-8 flex gap-4 rounded-2xl border p-5 sm:p-6', meta.cls]} data-reveal>
+  <span class:list={['grid size-10 shrink-0 place-items-center rounded-xl', meta.ic]} aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24"><path d={meta.icon} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </span>
+  <div class="min-w-0 text-[1.02rem] leading-relaxed text-ink-2 [&_a]:font-semibold [&_a]:text-signal-deep [&_a]:underline [&_strong]:text-ink">
+    <p class="font-display text-lg font-semibold text-ink">{title ?? meta.label}</p>
+    <div class="mt-1"><slot /></div>
+  </div>
+</aside>

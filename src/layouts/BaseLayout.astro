@@ -1,0 +1,100 @@
+---
+import '@/styles/global.css';
+import { site, isSet } from '@/config/site';
+import { hreflangAlternates } from '@/data/hreflang';
+import { fillPrices } from '@/data/pricing';
+import { organization, website, webPage, breadcrumbList, ogPath, type Crumb } from '@/lib/schema';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CookieBanner from '@/components/CookieBanner.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  /** Inner pages: the trail after Home. Home itself passes nothing. */
+  breadcrumbs?: Crumb[];
+  schema?: Record<string, unknown>[];
+  updated?: Date | string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  whatsappMessage?: string;
+}
+
+const { path, breadcrumbs, schema = [], noindex = false, ogType = 'website', whatsappMessage } = Astro.props;
+const title = fillPrices(Astro.props.title);
+const description = fillPrices(Astro.props.description);
+const canonical = new URL(path, site.url).href;
+const ogImage = new URL(ogPath(path), site.url).href;
+const updated =
+  Astro.props.updated instanceof Date
+    ? Astro.props.updated.toISOString().slice(0, 10)
+    : (Astro.props.updated ?? site.defaultUpdated);
+
+const alternates = Object.entries(hreflangAlternates[path] ?? {}).filter(([, href]) => isSet(href));
+
+const crumbs: Crumb[] | undefined = breadcrumbs ? [{ name: 'Home', path: '/' }, ...breadcrumbs] : undefined;
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    organization(),
+    website(),
+    webPage({ path, title, description, updated, hasBreadcrumb: !!crumbs, type: path === '/contact/' ? 'ContactPage' : path === '/about/' ? 'AboutPage' : undefined }),
+    ...(crumbs ? [breadcrumbList(crumbs)] : []),
+    ...schema.filter((n) => !['ContactPage', 'AboutPage'].includes(String(n['@type']))),
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en-GB" data-updated={updated}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
+    <link rel="alternate" hreflang="en-GB" href={canonical} />
+    {alternates.map(([lang, href]) => <link rel="alternate" hreflang={lang} href={href} />)}
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    <link rel="preload" href="/fonts/bricolage-grotesque-wght.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title="Works AI blog" href="/rss.xml" />
+    <meta name="theme-color" content="#f6f2ea" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.brand} />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+  </head>
+  <body class="min-h-dvh flex flex-col">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-paper"
+      >Skip to content</a
+    >
+    <Header path={path} />
+    <main id="main" class="flex-1">
+      {crumbs && <Breadcrumbs crumbs={crumbs} />}
+      <slot />
+    </main>
+    <Footer path={path} whatsappMessage={whatsappMessage} />
+    <CookieBanner />
+  </body>
+</html>

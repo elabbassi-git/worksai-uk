@@ -1,0 +1,35 @@
+---
+interface Props {
+  title: string;
+  items: string[];
+}
+const { title, items } = Astro.props;
+---
+
+<div class="not-prose my-10 rounded-[1.4rem] border border-line bg-card p-5 shadow-[var(--shadow-card)] sm:p-7" data-reveal>
+  <p class="font-display text-h3 font-semibold text-ink">{title}</p>
+  <ul class="mt-4 grid gap-2.5 sm:grid-cols-2">
+    {
+      items.map((x) => (
+        <li class="check-item flex gap-3 rounded-xl border border-line bg-paper p-3 text-ink-2">
+          <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-moss text-paper" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.4" /></svg>
+          </span>
+          <span>{x}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .check-item {
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .check-item:hover {
+    transform: translateX(3px);
+    border-color: var(--color-line-strong);
+  }
+</style>

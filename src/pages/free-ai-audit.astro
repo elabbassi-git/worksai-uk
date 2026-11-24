@@ -1,0 +1,76 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/Section.astro';
+import Faq from '@/components/Faq.astro';
+import BookingEmbed from '@/components/BookingEmbed.astro';
+import LeadForm from '@/components/LeadForm.astro';
+import { site, whatsappLink } from '@/config/site';
+import { fillPrices } from '@/data/pricing';
+import { faqPage, service } from '@/lib/schema';
+
+const path = '/free-ai-audit/';
+const description = 'A free 30-minute video call to find what AI and automation could save your UK business, with practical next steps and no obligation. Book your free AI audit.';
+const faq = [
+  { q: 'Is it really free?', a: 'Yes. The 30-minute call is free and there is no obligation. If you want a detailed written report afterwards, that is our written AI audit at [[price:writtenAudit.build]].' },
+  { q: 'Will you try to sell me something?', a: 'We will tell you honestly what we would do and what it would cost, and also what you could do yourself or don’t need at all. Whether you go ahead is entirely up to you.' },
+  { q: 'What should I prepare?', a: 'Nothing formal. It helps to know roughly how many enquiries you get, where they come from and which admin jobs take the most time.' },
+  { q: 'What time zone are the calls in?', a: `All times are UK time. We work ${site.hours}.` },
+];
+---
+
+<BaseLayout
+  title="Free AI Audit for UK Businesses (30 mins) | Works AI"
+  description={description}
+  path={path}
+  breadcrumbs={[{ name: 'Free AI audit', path }]}
+  schema={[service({ name: 'Free 30-minute AI audit', description, path, serviceType: 'AI and automation audit', priceKey: 'freeAudit' }), faqPage(faq.map((f) => ({ q: f.q, a: fillPrices(f.a) })))]}
+  whatsappMessage="Hello Works AI, I'd like to book a free 30-minute AI audit."
+>
+  <section class="container-x grid gap-12 pb-16 pt-10 sm:pt-14 lg:grid-cols-[1fr_1.1fr] lg:items-start">
+    <div>
+      <p class="eyebrow reveal">Free · 30 minutes · video call</p>
+      <h1 class="mt-5 text-h1">Book a free 30-minute AI audit</h1>
+      <p class="reveal reveal-2 mt-6 text-lead text-ink-2">
+        In half an hour we look at how enquiries, bookings and admin work in your business, and tell you plainly what is worth automating, what it would cost and what you can safely ignore.
+      </p>
+      <h2 class="mt-10 font-display text-h3 font-semibold">What happens on the call</h2>
+      <ol class="mt-4 grid gap-4">
+        {
+          [
+            ['5 minutes', 'You tell us about your business, your customers and what takes up your time.'],
+            ['15 minutes', 'We look together at where enquiries come from, how fast they get answered, how you book and how you get paid.'],
+            ['10 minutes', 'We suggest two or three practical next steps, with rough costs, including anything you could do yourself for free.'],
+          ].map(([t, d], i) => (
+            <li class="flex gap-4">
+              <span class="grid size-9 shrink-0 place-items-center rounded-full bg-ink font-mono text-sm text-paper">{i + 1}</span>
+              <span><strong class="block">{t}</strong><span class="text-ink-2">{d}</span></span>
+            </li>
+          ))
+        }
+      </ol>
+      <h2 class="mt-10 font-display text-h3 font-semibold">Who it is for</h2>
+      <ul class="mt-4 grid gap-2 text-ink-2">
+        <li>UK businesses, sole traders and agencies of any size or sector</li>
+        <li>Anyone who misses calls or messages, spends evenings on admin, or isn't sure where AI fits</li>
+        <li>Owners who want straight answers, not a sales pitch</li>
+      </ul>
+      <p class="mt-8 text-sm text-ink-3">
+        Prefer to message? <a href={whatsappLink("Hello Works AI, I'd like to book a free 30-minute AI audit.")} class="link" data-event="whatsapp_click" rel="noopener">Ask on WhatsApp</a>. Want something in writing? Our written AI audit is {fillPrices('[[price:writtenAudit.build]]')}, see <a href="/pricing/" class="link">pricing</a>.
+      </p>
+    </div>
+    <div class="grid gap-6 lg:sticky lg:top-24">
+      <BookingEmbed />
+    </div>
+  </section>
+
+  <Section id="form" eyebrow="Can't find a time?" title="Send us your details instead" intro="We will reply within one working day with a few times that suit you, all in UK time." tone="alt" narrow>
+    <LeadForm variant="audit" />
+  </Section>
+
+  <Section id="faq" eyebrow="FAQ" title="About the free audit" narrow>
+    <Faq items={faq.map((f) => ({ q: f.q, a: fillPrices(f.a) }))} />
+    <p class="mt-10 text-ink-2">
+      Want to see what we might suggest first? Read about our <a href="/services/ai-agents/" class="link">AI agents and virtual employees</a>, our <a href="/business/website-design-seo/" class="link">website design and SEO</a> service or the <a href="/free-seo-check/" class="link">free website and SEO check</a>.
+    </p>
+  </Section>
+</BaseLayout>

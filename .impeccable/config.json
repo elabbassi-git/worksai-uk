@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "scripts/check.ts"
+        ],
+        "createdAt": "2026-11-24T11:16:09.439Z",
+        "reason": "assistant: QA script that inspects <img> attributes in built HTML; contains no rendered image"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-11-24T11:57:06.869Z",
+        "reason": "assistant: intentional blueprint motif for a software-engineering studio, masked to hero areas only"
+      }
+    ]
+  }
+}

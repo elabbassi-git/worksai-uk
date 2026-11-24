@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "worksai-dev", "runtimeExecutable": "npx", "runtimeArgs": ["astro", "dev", "--port", "5262"], "port": 5262 },
+    { "name": "worksai-preview", "runtimeExecutable": "npx", "runtimeArgs": ["astro", "preview", "--port", "5263"], "port": 5263 }
+  ]
+}

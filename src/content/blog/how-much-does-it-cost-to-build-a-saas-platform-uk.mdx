@@ -1,0 +1,137 @@
+---
+title: "Cost to Build a SaaS Platform in the UK (2026) | Works AI"
+description: "What drives the cost of building a SaaS platform in the UK: scope, integrations, security, design and team, plus how to get a fixed one-time quote."
+h1: "How much does it cost to build a SaaS platform in the UK?"
+answer: "The cost of building a SaaS platform depends on scope far more than technology: the number of user roles, screens, integrations and the security your customers expect. The safest way to buy is a short discovery phase followed by a fixed, one-time price for a clearly defined first release."
+category: Pricing guides
+draft: false
+published: 2026-11-24
+updated: 2026-11-24
+readingTime: 8-minute
+service: /services/saas-development/
+problemPage: /website-redesign/
+keyword: "how much does it cost to build a SaaS platform UK"
+takeaways:
+  - "Scope is the biggest cost driver: roles, screens, integrations and data rules."
+  - "Ask for a fixed price per release, not an open-ended day rate."
+  - "Separate build cost from running costs such as hosting, which you should pay directly."
+  - "Watch for monthly agency fees that quietly turn a build into a lifelong subscription."
+---
+
+import Callout from '@/components/blog/Callout.astro';
+import Flow from '@/components/blog/Flow.astro';
+import Compare from '@/components/blog/Compare.astro';
+import Checklist from '@/components/blog/Checklist.astro';
+import StatGrid from '@/components/blog/StatGrid.astro';
+import PriceCard from '@/components/blog/PriceCard.astro';
+
+## Why "how much?" is the wrong first question
+
+Asking what a SaaS platform costs is like asking what a house costs. A studio flat and a five-bedroom detached are both "a house". Any honest answer starts with **what you need built**. The good news is that the cost drivers are well understood, so you can control them.
+
+## The seven things that drive SaaS build cost
+
+<Flow
+  caption="The biggest levers on price, roughly in order of impact."
+  steps={[
+    { title: 'Scope of release 1', text: 'How many features ship first' },
+    { title: 'User roles', text: 'Customers, staff, admins, partners' },
+    { title: 'Integrations', text: 'Payments, accounting, CRMs, APIs' },
+    { title: 'Data & security', text: 'Multi-tenancy, compliance, audit' },
+    { title: 'Design depth', text: 'Templates or fully custom UI' },
+    { title: 'AI features', text: 'Search, document reading, assistants' },
+  ]}
+/>
+
+### 1. The scope of your first release
+
+Every screen, form and workflow takes design, build and testing time. The single best way to control cost is to launch with **one core job done well**, then add features once real customers tell you what matters.
+
+### 2. The number of user roles
+
+A platform where one type of user does one thing is simple. Add staff, admins, managers and your customers' own customers, each with different permissions, and complexity grows quickly because every screen has to respect every role.
+
+### 3. Integrations
+
+Each connection to another system, such as Stripe, Xero, a CRM or a government API, has to be built, tested and handled when it fails. Well-documented APIs are quicker; older or poorly documented systems take longer.
+
+### 4. Data, security and compliance
+
+Multi-tenant isolation, audit logs, data retention rules and UK GDPR requirements are essential for most B2B platforms. Regulated sectors, such as finance or health, add further review and documentation.
+
+### 5. Design depth
+
+A clean, consistent interface built on a solid design system is efficient. Highly bespoke animation and illustration across every screen costs more. Both can look excellent; the difference is effort.
+
+### 6. AI features
+
+Search, document reading and assistants can transform a product, but they need careful testing against real examples and safeguards for when the model is unsure. We cover this in our [AI web app development](/services/ai-web-development/) service.
+
+### 7. Who builds it
+
+A solo freelancer, a studio and a large consultancy all price differently. What matters most is whether the price is **fixed against a clear scope**, and whether you own the result.
+
+## What the market looks like
+
+Hard data on UK agency pricing is scarce, partly because many agencies don't publish prices at all. One recent study is a useful reference point:
+
+<StatGrid
+  source="a November 2026 study of 277 UK AI agencies by TrustedAIAgencies, reported by IT Brief UK"
+  items={[
+    { value: '[[market:percentNotPublishingPrices]]', label: "of UK AI agencies don't publish their prices" },
+    { value: '[[market:medianStartingProject]]', label: 'median starting project price' },
+    { value: '[[market:medianChatbotBuild]]', label: 'median chatbot build price' },
+  ]}
+/>
+
+These figures cover AI agencies generally, not full SaaS platforms, which are usually larger projects. They are a reminder to ask for published or fixed prices before you commit.
+
+## Day rates vs a fixed, one-time price
+
+<Compare
+  left="Day rate / time and materials"
+  right="Fixed one-time price"
+  caption="Fixed pricing needs a clear scope, which is why discovery comes first."
+  rows={[
+    { label: 'Who carries overrun risk', left: 'You', right: 'The studio', winner: 'right' },
+    { label: 'Budget certainty', left: 'Low', right: 'High', winner: 'right' },
+    { label: 'Flexibility mid-project', left: 'High', right: 'Changes quoted separately' },
+    { label: 'Needs a clear scope', left: 'No', right: 'Yes' },
+    { label: 'Ongoing agency fees', left: 'Often', right: 'None at Works AI', winner: 'right' },
+  ]}
+/>
+
+<Callout type="warning" title="The hidden cost: monthly agency fees">
+  Some agencies quote a low build price, then charge a monthly fee to host, "maintain" or license the platform they built in their own accounts. Over a few years that can exceed the build cost, and leaving becomes difficult. Always ask what you will pay after launch, and to whom.
+</Callout>
+
+## Build cost vs running cost
+
+Keep these two numbers separate:
+
+- **Build cost:** designing, engineering, testing and launching the platform. At Works AI this is a single, one-time payment.
+- **Running cost:** hosting, database, email sending, payment fees and any AI usage. These are paid directly to the providers, in accounts in your name, and scale with your usage. A good studio estimates them for you before you commit.
+
+## How to get an accurate quote
+
+<Checklist
+  title="Bring these to your first call"
+  items={[
+    'Who your first users are, and the one job they need done',
+    'Any existing tools or data the platform must connect to',
+    'Must-have features for launch, and nice-to-haves for later',
+    'Rough timeline and any fixed deadlines',
+    'Compliance needs, such as sector rules or data location',
+    'Examples of products whose experience you admire',
+  ]}
+/>
+
+## Smaller first steps
+
+Not ready for a full platform? A smaller system can prove the value first. A business dashboard that pulls your numbers into one view, for example, starts from [[price:dashboard.build]] as a one-time build.
+
+<PriceCard priceKey="saasPlatform" href="/services/saas-development/" cta="How our fixed-price SaaS builds work" />
+
+## The bottom line
+
+The cost of a SaaS platform is driven by what you ask it to do. Keep the first release focused, insist on a fixed price against a clear scope, own your code and accounts, and separate build cost from running costs. If you want help scoping it, [book a free 30-minute AI audit](/free-ai-audit/) or read our [practical guide to custom SaaS development in the UK](/blog/custom-saas-development-uk/). If the immediate problem is an outdated website rather than software, see [how to fix an old or slow website](/website-redesign/).

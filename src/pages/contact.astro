@@ -1,0 +1,132 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LeadForm from '@/components/LeadForm.astro';
+import DataHandling from '@/components/DataHandling.astro';
+import Section from '@/components/Section.astro';
+import Faq from '@/components/Faq.astro';
+import Flow from '@/components/blog/Flow.astro';
+import PageHero from '@/components/PageHero.astro';
+import { faqPage } from '@/lib/schema';
+const faq = [
+  { q: 'How quickly will you reply?', a: 'Within one working day, in UK business hours. Messages that arrive in the evening or at the weekend are answered the next working day.' },
+  { q: 'Is the first conversation free?', a: 'Yes. Questions, the 30-minute AI audit and the website and SEO check are all free, with no obligation.' },
+  { q: 'Can we talk on a video call?', a: 'Yes. Most projects start with a video call. Book a slot through the free AI audit page, or ask for times by email or WhatsApp.' },
+  { q: 'Do you sign NDAs?', a: 'Yes. If your idea or data is confidential, we are happy to sign a non-disclosure agreement before you share details.' },
+];
+import { site, whatsappLink } from '@/config/site';
+---
+
+<BaseLayout
+  title="Contact Us | Works AI"
+  description="Contact Works AI by form, email or WhatsApp. A remote team working UK business hours, replying within one working day. Or book a free 30-minute AI audit."
+  path="/contact/"
+  breadcrumbs={[{ name: 'Contact us', path: '/contact/' }]}
+  schema={[{ '@type': 'ContactPage', name: 'Contact Works AI', url: 'https://worksai.uk/contact/' }, faqPage(faq)]}
+>
+  <PageHero eyebrow="Free AI audit · 30 minutes" title="Contact us" intro="Book a time or write to us. We'll look at how your business runs today and tell you, plainly, what is worth building or automating first, with no obligation." badge="Reply within one working day, in UK hours" />
+
+  <section class="container-x grid gap-6 pb-20 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-start">
+    <LeadForm variant="contact" rich submitLabel="Send my request" />
+
+    <div class="grid gap-6">
+      <div class="card p-6 sm:p-7">
+        <h2 class="font-display text-h3 font-semibold">What's included in your free audit</h2>
+        <ul class="mt-4 grid gap-3">
+          {
+            [
+              'A look at how enquiries reach you today',
+              'The tasks worth automating first, and those that are not',
+              'Rough one-time costs and timelines',
+              'Clear next steps, with no obligation',
+            ].map((x) => (
+              <li class="flex gap-3 text-ink-2">
+                <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-moss text-paper" aria-hidden="true">
+                  <svg width="10" height="10" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.4" /></svg>
+                </span>
+                {x}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="card p-6 sm:p-7">
+        <h2 class="font-display text-h3 font-semibold">Contact details</h2>
+        <ul class="mt-4 grid gap-1">
+          {
+            [
+              { href: `mailto:${site.email}`, icon: 'M3 6h18v12H3zM3 7l9 6 9-6', label: site.email, sub: 'Email us any time' },
+              { href: `tel:${site.phone}`, icon: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2', label: site.phoneDisplay, sub: 'Call in UK business hours' },
+              { href: whatsappLink('Hello Works AI, I have a question.'), icon: 'M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12Z', label: 'WhatsApp', sub: 'Message us, we reply in UK hours', event: 'whatsapp_click' },
+            ].map((c) => (
+              <li>
+                <a href={c.href} class="group flex items-center gap-4 rounded-xl px-2 py-2.5 transition-colors hover:bg-paper" data-event={c.event} rel={c.event ? 'noopener' : undefined}>
+                  <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-paper-2 text-ink-2 transition-colors group-hover:bg-signal group-hover:text-ink" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path d={c.icon} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  </span>
+                  <span>
+                    <span class="block font-semibold">{c.label}</span>
+                    <span class="block text-sm text-ink-3">{c.sub}</span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+          <li class="flex items-center gap-4 px-2 py-2.5">
+            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-paper-2 text-ink-2" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-13v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+            </span>
+            <span>
+              <span class="block font-semibold">{site.hours}</span>
+              <span class="block text-sm text-ink-3">{site.location} {site.hoursNote}</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <figure class="relative overflow-hidden rounded-[var(--radius-card)] bg-ink p-6 text-paper sm:p-7">
+        <div aria-hidden="true" class="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-signal/30 blur-2xl"></div>
+        <blockquote class="relative font-display text-xl leading-snug">“One conversation is often enough to find hours of work a week that software could do for you.”</blockquote>
+        <figcaption class="relative mt-3 text-sm text-paper/70">Works AI · one-time pricing, you own what we build</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="container-x pb-4"><DataHandling /></section>
+
+  <Section id="routes" eyebrow="Fastest route" title="Pick the option that suits you" tone="alt">
+    <ul class="grid gap-4 md:grid-cols-3">
+      {
+        [
+          ['/free-ai-audit/', 'Book a free 30-minute AI audit', 'Best if you want advice on what to build, automate or fix first.', 'audit_booking_click'],
+          ['/free-seo-check/', 'Get a free website & SEO check', 'Best if you mainly want more people to find you on Google.', ''],
+          ['/services/saas-development/', 'Talk about a SaaS platform', 'Best if you have a product idea or a process that has outgrown spreadsheets.', ''],
+        ].map(([h, t, d, ev]) => (
+          <li>
+            <a href={h} class="card card-link flex h-full flex-col p-6" data-event={ev || undefined}>
+              <h3 class="font-display text-h3 font-semibold">{t}</h3>
+              <p class="mt-2 flex-1 text-ink-2">{d}</p>
+              <span class="link mt-4 text-sm font-semibold">Go to {t.toLowerCase().replace(/^book a |^get a |^talk about a /, '')}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section id="next" eyebrow="What happens next" title="After you get in touch">
+    <Flow
+      steps={[
+        { title: 'We reply', text: 'Within one working day' },
+        { title: 'Free call', text: '30 minutes, by video' },
+        { title: 'Written proposal', text: 'Scope and one fixed price' },
+        { title: 'You decide', text: 'No obligation, no pressure' },
+      ]}
+    />
+  </Section>
+
+  <Section id="faq" eyebrow="FAQ" title="Before you get in touch" tone="alt">
+    <Faq items={faq} />
+    <p class="mt-8 text-ink-2">More answers on the <a href="/faq/" class="link font-semibold">Works AI FAQ</a> and our <a href="/pricing/" class="link font-semibold">pricing page</a>.</p>
+  </Section>
+</BaseLayout>

@@ -1,0 +1,367 @@
+---
+/**
+ * Hero slide 1: illustrative SaaS platform UI with a live, looping workflow
+ * (invoice requested → payment processing → "Paid ✓" → KPIs tick up → AI answers).
+ * Pure HTML/CSS. Animations run only while the parent `.slide` is active, and restart
+ * each time it becomes active. Demo data only.
+ */
+const bars = [38, 52, 46, 61, 58, 72, 69, 84, 77, 91, 88, 80];
+---
+
+<figure class="platform relative mx-auto w-full" aria-label="Illustration: an example SaaS platform dashboard processing a payment, with demo data">
+  <div aria-hidden="true" class="absolute -inset-10 -z-10 rounded-[3rem] bg-gradient-to-br from-signal/30 via-paper-2 to-moss/25 blur-3xl"></div>
+
+  <div class="window overflow-hidden rounded-[1.4rem] border border-ink/10 bg-card shadow-[0_60px_120px_-50px_rgb(21_23_28/0.55)]" aria-hidden="true">
+    <div class="flex items-center gap-3 border-b border-line bg-paper px-4 py-3">
+      <span class="flex gap-1.5"><i class="size-2.5 rounded-full bg-[#f87171]"></i><i class="size-2.5 rounded-full bg-[#fbbf24]"></i><i class="size-2.5 rounded-full bg-[#4ade80]"></i></span>
+      <span class="mx-auto flex items-center gap-2 rounded-lg bg-card px-3 py-1 font-mono text-[0.68rem] text-ink-3 ring-1 ring-line">
+        <svg width="10" height="10" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+        app.yourplatform.co.uk
+      </span>
+    </div>
+
+    <div class="grid grid-cols-[10rem_1fr] text-[0.72rem]">
+      <aside class="border-r border-line bg-paper/70 p-3">
+        <div class="tenant flex items-center gap-2 rounded-lg bg-card p-2 ring-1 ring-line">
+          <span class="grid size-6 place-items-center rounded-md bg-moss font-semibold text-paper">N</span>
+          <span class="min-w-0 flex-1 truncate font-semibold">Northwind Ltd</span>
+          <svg width="10" height="10" viewBox="0 0 10 10" class="text-ink-3"><path d="M2 4l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg>
+        </div>
+        <ul class="mt-4 grid gap-0.5 text-ink-2">
+          {
+            ['Overview', 'Customers', 'Projects', 'Invoices', 'Team & roles', 'Settings'].map((x, i) => (
+              <li class:list={['nav-item flex items-center gap-2 rounded-md px-2 py-1.5', i === 0 && 'is-home', i === 3 && 'is-invoices']}>
+                <span class="dot size-1.5 rounded-full bg-line-strong" />
+                {x}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-5 rounded-lg bg-moss-soft/70 p-2 text-[0.65rem] text-moss">
+          <p class="font-semibold">Multi-tenant</p>
+          <p class="opacity-80">3 organisations · isolated data</p>
+        </div>
+      </aside>
+
+      <div class="p-4">
+        <div class="flex items-center justify-between">
+          <p class="font-display text-sm font-semibold">Overview</p>
+          <span class="rounded-full bg-paper-2 px-2 py-0.5 font-mono text-[0.6rem] text-ink-3">Demo data</span>
+        </div>
+        <div class="mt-3 grid grid-cols-3 gap-2">
+          <div class="kpi rounded-xl bg-paper p-2.5 ring-1 ring-line">
+            <p class="truncate text-ink-3">Active users</p>
+            <p class="cnt cnt-users mt-1 font-display text-lg font-semibold"></p>
+            <p class="font-semibold text-moss">+12%</p>
+          </div>
+          <div class="kpi rounded-xl bg-paper p-2.5 ring-1 ring-line">
+            <p class="truncate text-ink-3">Projects</p>
+            <p class="mt-1 font-display text-lg font-semibold">342</p>
+            <p class="font-semibold text-moss">+8%</p>
+          </div>
+          <div class="kpi kpi-paid rounded-xl bg-paper p-2.5 ring-1 ring-line">
+            <p class="truncate text-ink-3">Paid invoices</p>
+            <p class="cnt cnt-paid mt-1 font-display text-lg font-semibold"></p>
+            <p class="font-semibold text-moss">+3 pts</p>
+          </div>
+        </div>
+        <div class="mt-3 rounded-xl bg-paper p-3 ring-1 ring-line">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold">Revenue, last 12 weeks</p>
+            <p class="text-ink-3">Weekly</p>
+          </div>
+          <div class="chart mt-3 flex h-16 items-end gap-1.5">
+            {bars.map((h, i) => <span style={`--h:${h}%; --i:${i}`} class:list={[i === bars.length - 1 && 'is-last']} />)}
+          </div>
+        </div>
+        <!-- activity feed: a new row slides in at the top, then flips to Paid -->
+        <div class="feed mt-3 grid gap-1.5">
+          <div class="row row-new flex items-center gap-2 rounded-lg px-2 py-1.5 ring-1 ring-signal/50">
+            <span class="size-1.5 rounded-full bg-signal" />
+            <span class="font-semibold">Invoice requested</span>
+            <span class="min-w-0 flex-1 truncate text-ink-3">INV-1044 · Riverside Clinics</span>
+            <span class="chip-stack relative grid text-[0.6rem] font-semibold">
+              <span class="chip chip-pending rounded-full bg-paper-2 px-1.5 py-0.5 text-ink-2">Pending</span>
+              <span class="chip chip-paid rounded-full bg-moss px-1.5 py-0.5 text-paper">Paid ✓</span>
+            </span>
+          </div>
+          {
+            [
+              ['Org created', 'Harbour Legal', 'Admin'],
+              ['Role changed', 'S. Patel → Manager', 'Security'],
+            ].map(([a, b, c]) => (
+              <div class="row flex items-center gap-2 rounded-lg px-2 py-1.5 ring-1 ring-line">
+                <span class="size-1.5 rounded-full bg-line-strong" />
+                <span class="font-semibold">{a}</span>
+                <span class="min-w-0 flex-1 truncate text-ink-3">{b}</span>
+                <span class="rounded-full bg-paper-2 px-1.5 py-0.5 text-[0.6rem] text-ink-2">{c}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- payment card: processing → successful -->
+  <div class="pay absolute -right-8 -top-7 w-[13.5rem] rounded-2xl bg-card p-3 text-[0.72rem] shadow-[var(--shadow-lift)] ring-1 ring-line" aria-hidden="true">
+    <div class="flex items-center justify-between">
+      <span class="font-semibold">Card payment · INV-1044</span>
+      <span class="pay-icon grid size-5 place-items-center rounded-full bg-paper-2 text-[0.6rem]">
+        <span class="spin size-3 rounded-full border-2 border-signal border-t-transparent" />
+      </span>
+    </div>
+    <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-paper-3"><span class="pay-bar block h-full rounded-full bg-signal" /></div>
+    <p class="pay-text relative mt-1.5 grid">
+      <span class="t-processing text-ink-3">Processing payment…</span>
+      <span class="t-done font-semibold text-moss">Payment successful ✓</span>
+    </p>
+  </div>
+
+  <!-- Ask your data: question, then answer -->
+  <div class="ai-card absolute -bottom-9 -left-10 w-[15.5rem] rounded-2xl bg-ink p-3.5 text-[0.75rem] text-paper shadow-[0_30px_60px_-25px_rgb(21_23_28/0.7)]" aria-hidden="true">
+    <p class="flex items-center gap-2 text-[0.65rem] uppercase tracking-wider text-paper/60"><span class="live size-1.5 rounded-full bg-signal"></span>Ask your data</p>
+    <p class="q mt-2 rounded-lg bg-paper/10 px-2.5 py-1.5">Which clients have overdue invoices?</p>
+    <p class="answer mt-2 rounded-lg bg-signal px-2.5 py-1.5 text-ink">2 clients now. Riverside Clinics just paid INV-1044.</p>
+  </div>
+</figure>
+
+<style>
+  @property --users {
+    syntax: '<integer>';
+    inherits: false;
+    initial-value: 1285;
+  }
+  @property --paid {
+    syntax: '<integer>';
+    inherits: false;
+    initial-value: 97;
+  }
+  @property --pay {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 100%;
+  }
+  .cnt-users {
+    counter-reset: users var(--users);
+  }
+  .cnt-users::after {
+    content: '1,' counter(users);
+  }
+  /* show the last three digits after "1," */
+  .cnt-users {
+    --users: 285;
+  }
+  .cnt-paid {
+    counter-reset: paid var(--paid);
+  }
+  .cnt-paid::after {
+    content: counter(paid) '%';
+  }
+  .nav-item.is-home {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-weight: 600;
+  }
+  .nav-item.is-home .dot {
+    background: var(--color-signal);
+  }
+  .chart span {
+    flex: 1;
+    height: var(--h);
+    border-radius: 4px 4px 1px 1px;
+    background: linear-gradient(to top, var(--color-paper-3), var(--color-line-strong));
+    transform-origin: bottom;
+  }
+  .chart span.is-last {
+    background: linear-gradient(to top, var(--color-signal-deep), var(--color-signal));
+    height: 100%;
+  }
+  .chip-stack > * {
+    grid-area: 1 / 1;
+    text-align: center;
+  }
+  .chip-pending {
+    opacity: 0;
+  }
+  .pay-bar {
+    width: var(--pay);
+  }
+  .pay-text > * {
+    grid-area: 1 / 1;
+  }
+  .t-processing {
+    opacity: 0;
+  }
+  .spin {
+    display: none;
+  }
+
+  /* ---------- live sequence (6 s), only while the slide is active ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:is(.slide.is-active, .live-inner.is-on)) .row-new {
+      animation: row-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .row:not(.row-new) {
+      animation: row-shift 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .chip-pending {
+      animation: show-until 2.6s linear 0s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .chip-paid {
+      animation: pop-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 2.6s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .is-invoices {
+      animation: nav-flash 1.6s ease 0.6s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .pay {
+      animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .pay-bar {
+      animation: pay 1.5s cubic-bezier(0.45, 0, 0.2, 1) 1s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .spin {
+      display: block;
+      animation:
+        spin 0.8s linear infinite,
+        hide-at 0.01s linear 2.5s forwards;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .pay-icon {
+      animation: icon-done 0.4s ease 2.5s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .t-processing {
+      animation: show-until 2.5s linear 0s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .t-done {
+      animation: pop-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) 2.5s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .cnt-paid {
+      animation: paid-tick 0.5s steps(1, end) 2.8s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .cnt-users {
+      animation: users-tick 0.5s steps(1, end) 3s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .kpi-paid {
+      animation: kpi-glow 1.2s ease 2.8s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .chart span {
+      animation: grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(0.1s + var(--i) * 0.04s);
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .chart .is-last {
+      animation: last-bar 0.8s cubic-bezier(0.16, 1, 0.3, 1) 2.9s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .ai-card {
+      animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3.3s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .ai-card .answer {
+      animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) 4.1s both;
+    }
+    :global(:is(.slide.is-active, .live-inner.is-on)) .ai-card .live {
+      animation: blink 1s ease-in-out infinite;
+    }
+  }
+  @keyframes row-in {
+    from {
+      opacity: 0;
+      transform: translateY(-14px) scale(0.97);
+    }
+  }
+  @keyframes row-shift {
+    from {
+      transform: translateY(-30px);
+    }
+  }
+  @keyframes show-until {
+    0%,
+    99.9% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  /* scale only (no opacity), so contrast is never measured on a half-transparent frame */
+  @keyframes pop-in {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes nav-flash {
+    0%,
+    100% {
+      background: transparent;
+    }
+    30%,
+    70% {
+      background: var(--color-signal-soft);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+  @keyframes pay {
+    from {
+      --pay: 0%;
+    }
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+  @keyframes hide-at {
+    to {
+      display: none;
+      opacity: 0;
+    }
+  }
+  @keyframes icon-done {
+    to {
+      background: var(--color-moss);
+      color: var(--color-paper);
+    }
+  }
+  @keyframes paid-tick {
+    from {
+      --paid: 96;
+    }
+  }
+  @keyframes users-tick {
+    from {
+      --users: 284;
+    }
+  }
+  @keyframes kpi-glow {
+    0%,
+    100% {
+      box-shadow: inset 0 0 0 1px var(--color-line);
+    }
+    30% {
+      box-shadow:
+        inset 0 0 0 1.5px var(--color-moss),
+        0 0 0 4px rgb(29 74 57 / 0.12);
+    }
+  }
+  @keyframes grow {
+    from {
+      transform: scaleY(0.05);
+    }
+  }
+  @keyframes last-bar {
+    from {
+      transform: scaleY(0.6);
+    }
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+</style>
