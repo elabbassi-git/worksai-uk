@@ -1,20 +1,38 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
 import Section from '@/components/Section.astro';
 import Faq from '@/components/Faq.astro';
 import BookingEmbed from '@/components/BookingEmbed.astro';
 import LeadForm from '@/components/LeadForm.astro';
-import { site, whatsappLink } from '@/config/site';
+import ContactCard from '@/components/ContactCard.astro';
+import DataHandling from '@/components/DataHandling.astro';
+import Flow from '@/components/blog/Flow.astro';
+import { site, isSet } from '@/config/site';
 import { fillPrices } from '@/data/pricing';
 import { faqPage, service } from '@/lib/schema';
 
 const path = '/free-ai-audit/';
 const description = 'A free 30-minute video call to find what AI and automation could save your UK business, with practical next steps and no obligation. Book your free AI audit.';
+const whatsappMessage = "Hello Works AI, I'd like to book a free 30-minute AI audit.";
+const bookingReady = isSet(site.bookingUrl);
 const faq = [
   { q: 'Is it really free?', a: 'Yes. The 30-minute call is free and there is no obligation. If you want a detailed written report afterwards, that is our written AI audit at [[price:writtenAudit.build]].' },
   { q: 'Will you try to sell me something?', a: 'We will tell you honestly what we would do and what it would cost, and also what you could do yourself or don’t need at all. Whether you go ahead is entirely up to you.' },
   { q: 'What should I prepare?', a: 'Nothing formal. It helps to know roughly how many enquiries you get, where they come from and which admin jobs take the most time.' },
   { q: 'What time zone are the calls in?', a: `All times are UK time. We work ${site.hours}.` },
+  { q: 'How do I send my request?', a: 'Fill in the form and choose email or WhatsApp. Your email app or WhatsApp opens with your details already written, so you only need to press send. We reply within one working day.' },
+];
+const callSteps = [
+  ['5 min', 'Your business', 'You tell us about your customers, your team and what takes up your time.'],
+  ['15 min', 'How work flows today', 'Where enquiries come from, how fast they are answered, how you book and how you get paid.'],
+  ['10 min', 'Practical next steps', 'Two or three suggestions with rough one-time costs, including anything you could do yourself for free.'],
+];
+const forWho = [
+  'UK businesses, sole traders and agencies of any size',
+  'Anyone missing calls or messages, or spending evenings on admin',
+  'Founders with a SaaS or platform idea to sense-check',
+  'Owners who want straight answers, not a sales pitch',
 ];
 ---
 
@@ -24,53 +42,85 @@ const faq = [
   path={path}
   breadcrumbs={[{ name: 'Free AI audit', path }]}
   schema={[service({ name: 'Free 30-minute AI audit', description, path, serviceType: 'AI and automation audit', priceKey: 'freeAudit' }), faqPage(faq.map((f) => ({ q: f.q, a: fillPrices(f.a) })))]}
-  whatsappMessage="Hello Works AI, I'd like to book a free 30-minute AI audit."
+  whatsappMessage={whatsappMessage}
 >
-  <section class="container-x grid gap-12 pb-16 pt-10 sm:pt-14 lg:grid-cols-[1fr_1.1fr] lg:items-start">
-    <div>
-      <p class="eyebrow reveal">Free · 30 minutes · video call</p>
-      <h1 class="mt-5 text-h1">Book a free 30-minute AI audit</h1>
-      <p class="reveal reveal-2 mt-6 text-lead text-ink-2">
-        In half an hour we look at how enquiries, bookings and admin work in your business, and tell you plainly what is worth automating, what it would cost and what you can safely ignore.
-      </p>
-      <h2 class="mt-10 font-display text-h3 font-semibold">What happens on the call</h2>
-      <ol class="mt-4 grid gap-4">
-        {
-          [
-            ['5 minutes', 'You tell us about your business, your customers and what takes up your time.'],
-            ['15 minutes', 'We look together at where enquiries come from, how fast they get answered, how you book and how you get paid.'],
-            ['10 minutes', 'We suggest two or three practical next steps, with rough costs, including anything you could do yourself for free.'],
-          ].map(([t, d], i) => (
-            <li class="flex gap-4">
-              <span class="grid size-9 shrink-0 place-items-center rounded-full bg-ink font-mono text-sm text-paper">{i + 1}</span>
-              <span><strong class="block">{t}</strong><span class="text-ink-2">{d}</span></span>
-            </li>
-          ))
-        }
-      </ol>
-      <h2 class="mt-10 font-display text-h3 font-semibold">Who it is for</h2>
-      <ul class="mt-4 grid gap-2 text-ink-2">
-        <li>UK businesses, sole traders and agencies of any size or sector</li>
-        <li>Anyone who misses calls or messages, spends evenings on admin, or isn't sure where AI fits</li>
-        <li>Owners who want straight answers, not a sales pitch</li>
-      </ul>
-      <p class="mt-8 text-sm text-ink-3">
-        Prefer to message? <a href={whatsappLink("Hello Works AI, I'd like to book a free 30-minute AI audit.")} class="link" data-event="whatsapp_click" rel="noopener">Ask on WhatsApp</a>. Want something in writing? Our written AI audit is {fillPrices('[[price:writtenAudit.build]]')}, see <a href="/pricing/" class="link">pricing</a>.
-      </p>
+  <PageHero
+    eyebrow="Free · 30 minutes · video call"
+    title="Book a free 30-minute AI audit"
+    intro="In half an hour we look at how enquiries, bookings and admin work in your business, and tell you plainly what is worth automating, what it would cost and what you can safely ignore."
+    badge="No obligation · reply within one working day, in UK hours"
+  />
+
+  <section class="container-x grid gap-6 pb-20 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-start" aria-label="Request your free AI audit">
+    <div class="grid gap-6">
+      {bookingReady && <BookingEmbed />}
+      <LeadForm variant="audit" rich submitLabel="Request my free audit" />
     </div>
-    <div class="grid gap-6 lg:sticky lg:top-24">
-      <BookingEmbed />
+
+    <div class="grid gap-6">
+      <div class="card p-6 sm:p-7">
+        <h2 class="font-display text-h3 font-semibold">What happens on the call</h2>
+        <ol class="relative mt-5 grid gap-5 before:absolute before:bottom-3 before:left-[1.4rem] before:top-3 before:w-px before:bg-line">
+          {
+            callSteps.map(([time, title, text]) => (
+              <li class="relative flex gap-4">
+                <span class="relative z-10 grid h-8 w-[2.8rem] shrink-0 place-items-center rounded-full bg-ink font-mono text-[0.7rem] text-paper">{time}</span>
+                <span class="min-w-0">
+                  <strong class="block leading-snug">{title}</strong>
+                  <span class="mt-0.5 block text-ink-2">{text}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="card p-6 sm:p-7">
+        <h2 class="font-display text-h3 font-semibold">Who it's for</h2>
+        <ul class="mt-4 grid gap-3">
+          {
+            forWho.map((x) => (
+              <li class="flex gap-3 text-ink-2">
+                <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-moss text-paper" aria-hidden="true">
+                  <svg width="10" height="10" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2.4" /></svg>
+                </span>
+                {x}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <ContactCard whatsappMessage={whatsappMessage} />
+
+      <figure class="relative overflow-hidden rounded-[var(--radius-card)] bg-ink p-6 text-paper sm:p-7">
+        <div aria-hidden="true" class="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-signal/30 blur-2xl"></div>
+        <p class="relative font-mono text-[0.72rem] uppercase tracking-[0.12em] text-paper/70">Want it in writing?</p>
+        <blockquote class="relative mt-2 font-display text-xl leading-snug">
+          Our written AI audit is {fillPrices('[[price:writtenAudit.build]]')}, paid once: a detailed report with priorities, costs and a plan.
+        </blockquote>
+        <figcaption class="relative mt-4"><a href="/pricing/" class="font-semibold text-paper underline decoration-signal underline-offset-4 hover:decoration-2">See every price</a></figcaption>
+      </figure>
     </div>
   </section>
 
-  <Section id="form" eyebrow="Can't find a time?" title="Send us your details instead" intro="We will reply within one working day with a few times that suit you, all in UK time." tone="alt" narrow>
-    <LeadForm variant="audit" />
+  <section class="container-x pb-4"><DataHandling /></section>
+
+  <Section id="next" eyebrow="What happens next" title="After you send your request" tone="alt">
+    <Flow
+      steps={[
+        { title: 'We reply', text: 'Within one working day' },
+        { title: 'Free call', text: '30 minutes, by video' },
+        { title: 'Clear next steps', text: 'With rough one-time costs' },
+        { title: 'You decide', text: 'No obligation, no pressure' },
+      ]}
+    />
   </Section>
 
-  <Section id="faq" eyebrow="FAQ" title="About the free audit" narrow>
+  <Section id="faq" eyebrow="FAQ" title="About the free audit">
     <Faq items={faq.map((f) => ({ q: f.q, a: fillPrices(f.a) }))} />
-    <p class="mt-10 text-ink-2">
-      Want to see what we might suggest first? Read about our <a href="/services/ai-agents/" class="link">AI agents and virtual employees</a>, our <a href="/business/website-design-seo/" class="link">website design and SEO</a> service or the <a href="/free-seo-check/" class="link">free website and SEO check</a>.
+    <p class="mt-8 text-ink-2">
+      Want to see what we might suggest first? Read about our <a href="/services/ai-agents/" class="link font-semibold">AI agents and virtual employees</a>, our <a href="/business/website-design-seo/" class="link font-semibold">website design and SEO</a> service or the <a href="/free-seo-check/" class="link font-semibold">free website and SEO check</a>. Or <a href="/contact/" class="link font-semibold">contact us</a> with any other question.
     </p>
   </Section>
 </BaseLayout>

@@ -54,6 +54,77 @@ export function initLeadForms() {
       }
     });
 
+    // ----- Send from the visitor's own email app or WhatsApp, pre-filled with the form -----
+    const status = root.querySelector<HTMLElement>('[data-send-status]');
+    const SKIP = new Set(['form', 'page', 'company_website', 'marketing_opt_in']);
+    const LABELS: Record<string, string> = {
+      name: 'Name',
+      email: 'Email',
+      phone: 'Phone / WhatsApp',
+      business: 'Business',
+      business_type: 'Business type',
+      service: 'Service',
+      budget: 'Budget (one-time)',
+      website: 'Website',
+      no_website: 'Website',
+      preferred_time: 'Preferred call time (UK)',
+    };
+    const ORDER = Object.keys(LABELS);
+    const labelFor = (el: Element) => {
+      const known = LABELS[(el as HTMLInputElement).name];
+      if (known) return known;
+      const lab = el.id ? form.querySelector(`label[for="${el.id}"]`) : null;
+      const text = (lab?.textContent ?? (el as HTMLInputElement).name).replace(/\(.*?\)/g, '').replace(/\s+/g, ' ').trim();
+      return text || (el as HTMLInputElement).name;
+    };
+    const collect = () => {
+      const rows: [string, string, string][] = [];
+      let message = '';
+      form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea').forEach((el) => {
+        if (!el.name || SKIP.has(el.name) || el.disabled) return;
+        if ((el.type === 'radio' || el.type === 'checkbox') && !(el as HTMLInputElement).checked) return;
+        let v = el.value.trim();
+        if (el.name === 'no_website') v = 'No website yet';
+        if (!v) return;
+        if (el.name === 'message') message = v;
+        else rows.push([el.name, labelFor(el), v]);
+      });
+      const rank = (n: string) => (ORDER.includes(n) ? ORDER.indexOf(n) : ORDER.length);
+      rows.sort((x, y) => rank(x[0]) - rank(y[0]));
+      return { rows: rows.map(([, k, v]) => [k, v] as [string, string]), message };
+    };
+    const compose = (rich: boolean) => {
+      const { rows, message } = collect();
+      const b = (t: string) => (rich ? `*${t}*` : t);
+      const lines = [root.dataset.greeting ?? 'Hello Works AI,', '', ...rows.map(([k, v]) => `${b(k + ':')} ${v}`)];
+      if (message) lines.push('', b('Message:'), message);
+      lines.push('', `Sent from ${location.host}${location.pathname}`);
+      return lines.join('\n');
+    };
+    root.querySelectorAll<HTMLButtonElement>('[data-send]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        errorBox.classList.add('hidden');
+        if (!validate()) return;
+        if (new FormData(form).get('company_website')) return; // bot
+        const how = btn.dataset.send;
+        if (how === 'email') {
+          const name = (form.elements.namedItem('name') as HTMLInputElement | null)?.value.trim();
+          const subject = `${root.dataset.subject ?? 'Enquiry'}${name ? ` – ${name}` : ''}`;
+          location.href = `mailto:${root.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(compose(false))}`;
+        } else {
+          window.open(`https://wa.me/${root.dataset.whatsapp}?text=${encodeURIComponent(compose(true))}`, '_blank', 'noopener');
+        }
+        if (status) {
+          status.textContent =
+            how === 'email'
+              ? `Your email app should now be open with your request filled in. Press send there. Nothing opened? Email us at ${root.dataset.email}.`
+              : 'WhatsApp should now be open with your request filled in. Press send there to reach us.';
+          status.classList.remove('hidden');
+        }
+        window.waiTrack?.(root.dataset.eventName ?? 'contact_submit', { form: root.dataset.variant, method: how });
+      });
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorBox.classList.add('hidden');
@@ -62,8 +133,7 @@ export function initLeadForms() {
       if (data.get('company_website')) return; // bot
       const endpoint = form.getAttribute('action') ?? '';
       if (isPlaceholder(endpoint)) {
-        errorBox.textContent = 'This form is not connected yet. Please email or WhatsApp us instead.';
-        errorBox.classList.remove('hidden');
+        root.querySelector<HTMLButtonElement>('[data-send="email"]')?.click();
         return;
       }
       submit.disabled = true;

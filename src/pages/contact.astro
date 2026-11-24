@@ -6,6 +6,7 @@ import Section from '@/components/Section.astro';
 import Faq from '@/components/Faq.astro';
 import Flow from '@/components/blog/Flow.astro';
 import PageHero from '@/components/PageHero.astro';
+import ContactCard from '@/components/ContactCard.astro';
 import { faqPage } from '@/lib/schema';
 const faq = [
   { q: 'How quickly will you reply?', a: 'Within one working day, in UK business hours. Messages that arrive in the evening or at the weekend are answered the next working day.' },
@@ -13,7 +14,6 @@ const faq = [
   { q: 'Can we talk on a video call?', a: 'Yes. Most projects start with a video call. Book a slot through the free AI audit page, or ask for times by email or WhatsApp.' },
   { q: 'Do you sign NDAs?', a: 'Yes. If your idea or data is confidential, we are happy to sign a non-disclosure agreement before you share details.' },
 ];
-import { site, whatsappLink } from '@/config/site';
 ---
 
 <BaseLayout
@@ -50,39 +50,7 @@ import { site, whatsappLink } from '@/config/site';
         </ul>
       </div>
 
-      <div class="card p-6 sm:p-7">
-        <h2 class="font-display text-h3 font-semibold">Contact details</h2>
-        <ul class="mt-4 grid gap-1">
-          {
-            [
-              { href: `mailto:${site.email}`, icon: 'M3 6h18v12H3zM3 7l9 6 9-6', label: site.email, sub: 'Email us any time' },
-              { href: `tel:${site.phone}`, icon: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2', label: site.phoneDisplay, sub: 'Call in UK business hours' },
-              { href: whatsappLink('Hello Works AI, I have a question.'), icon: 'M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12Z', label: 'WhatsApp', sub: 'Message us, we reply in UK hours', event: 'whatsapp_click' },
-            ].map((c) => (
-              <li>
-                <a href={c.href} class="group flex items-center gap-4 rounded-xl px-2 py-2.5 transition-colors hover:bg-paper" data-event={c.event} rel={c.event ? 'noopener' : undefined}>
-                  <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-paper-2 text-ink-2 transition-colors group-hover:bg-signal group-hover:text-ink" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path d={c.icon} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                  </span>
-                  <span>
-                    <span class="block font-semibold">{c.label}</span>
-                    <span class="block text-sm text-ink-3">{c.sub}</span>
-                  </span>
-                </a>
-              </li>
-            ))
-          }
-          <li class="flex items-center gap-4 px-2 py-2.5">
-            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-paper-2 text-ink-2" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-13v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
-            </span>
-            <span>
-              <span class="block font-semibold">{site.hours}</span>
-              <span class="block text-sm text-ink-3">{site.location} {site.hoursNote}</span>
-            </span>
-          </li>
-        </ul>
-      </div>
+      <ContactCard />
 
       <figure class="relative overflow-hidden rounded-[var(--radius-card)] bg-ink p-6 text-paper sm:p-7">
         <div aria-hidden="true" class="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-signal/30 blur-2xl"></div>

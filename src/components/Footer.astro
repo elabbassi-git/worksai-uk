@@ -53,7 +53,7 @@ const year = new Date().getFullYear();
         <a href="/" aria-label="Works AI home" class="inline-block rounded-lg"><Logo dark animated /></a>
         <p class="mt-5 text-paper/80">{site.tagline}.</p>
         <p class="mt-4 text-paper/80">
-          {site.location}. Hours: {site.hours}. <span class="text-paper/60">{site.hoursNote}</span>
+          {site.location}. Hours: {site.hours}. {isSet(site.hoursNote) && <span class="text-paper/60">{site.hoursNote}</span>}
         </p>
         <ul class="mt-6 grid gap-2 text-paper">
           <li><a class="underline decoration-paper/30 underline-offset-4 hover:decoration-signal" href={`mailto:${site.email}`}>{site.email}</a></li>
