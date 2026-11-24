@@ -1,0 +1,21 @@
+# Source of truth for path redirects. The build turns these into dist/.htaccess rules
+# (live host: Spaceship cPanel / LiteSpeed), and Cloudflare Pages can read this file as is.
+# www -> apex, http -> https and trailing slashes are handled in the generated .htaccess.
+
+# Common alternative URLs
+/home                 /                              301
+/index.html           /                              301
+/services/whatsapp-chatbot/  /services/ai-agents/whatsapp/  301
+/services/ai-receptionist/   /services/ai-agents/ai-receptionist/  301
+/website-design/      /business/website-design-seo/  301
+/courses/             /ai-shop/training/             301
+/courses/*            /ai-shop/training/:splat       301
+/subscriptions/       /pricing/                      301
+/ai-shop/subscriptions/  /pricing/                   301
+/audit/               /free-ai-audit/                301
+/seo-check/           /free-seo-check/               301
+/feed/                /rss.xml                       301
+
+# Old URLs from any previous site go here: /old-path/  /new-path/  301
+# {{OLD_URL_REDIRECTS}}
+/services/dashboards-saas/  /services/saas-development/  301

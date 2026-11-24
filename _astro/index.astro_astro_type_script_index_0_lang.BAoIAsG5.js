@@ -1,0 +1,1 @@
+var e=[...document.querySelectorAll(`[data-copy]`)];document.addEventListener(`showcase:change`,t=>{let n=t.detail.index;e.forEach((e,t)=>{let r=t===n;e.classList.toggle(`is-active`,r),r?e.removeAttribute(`aria-hidden`):e.setAttribute(`aria-hidden`,`true`)})});

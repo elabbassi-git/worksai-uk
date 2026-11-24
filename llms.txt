@@ -1,0 +1,46 @@
+# Works AI
+
+> Works AI (worksai.uk) is a SaaS and web platform development studio for UK businesses. It designs, builds and launches SaaS platforms, AI-powered web apps, websites, AI assistants and automations. Every service is a one-time fixed price with no monthly fees; clients own the code, accounts and data. A remote team serving UK businesses, working UK business hours, 9:00 to 17:30, Monday to Friday, UK time (GMT/BST).
+
+Key facts:
+- Pricing model: one-time payment only. No monthly fees, retainers or subscriptions. Third-party running costs (hosting, AI usage, messaging) are paid by the client directly to providers.
+- Ownership: code, accounts, domains and data are set up in the client’s name; full hand-over documentation; no lock-in.
+- Market: UK businesses, sole traders, agencies and growing companies. All prices in GBP.
+- Contact: hello@worksai.uk, +44 7311 020193. Free 30-minute AI audit: https://worksai.uk/free-ai-audit/
+
+## Services
+- [SaaS & Platform Development](https://worksai.uk/services/saas-development/): Production-ready SaaS platforms, dashboards and AI web apps, built and handed over. Price: Price on request.
+- [AI Agents & Virtual Employees](https://worksai.uk/services/ai-agents/): Assistants that answer, book and enter data into your CRM, around the clock. Price: From £1,200, one-time.
+- [WhatsApp AI Assistant](https://worksai.uk/services/ai-agents/whatsapp/): Replies to WhatsApp enquiries 24/7, qualifies leads and books them in. Price: From £1,200, one-time.
+- [AI Receptionist](https://worksai.uk/services/ai-agents/ai-receptionist/): Answers calls 24/7, takes messages and bookings, and sends you summaries. Price: From £1,500, one-time.
+- [Local SEO & Google Maps](https://worksai.uk/services/local-seo/): A one-off Google Business Profile and local SEO set-up, handed over to you. Price: Price on request.
+- [Website Design & SEO](https://worksai.uk/business/website-design-seo/): A fast 5 to 10 page site with on-page SEO and an AI chat assistant. Price: £1,490, one-time.
+- [Online Booking & Appointments](https://worksai.uk/business/online-booking-system/): Online booking with text and email reminders to cut no-shows. Price: Price on request.
+- [Automated Invoicing & Payment Reminders](https://worksai.uk/business/automated-invoice-reminders/): Automatic reminders for late invoices by email and WhatsApp. Price: From £750, one-time.
+- [AI Web Development](https://worksai.uk/services/ai-web-development/): Web apps with AI features such as smart search, document reading and assistants. Price: Price on request.
+
+## Guides
+- [How to get your business on Google, starting from zero](https://worksai.uk/get-found-on-google/): To get your business on Google, create and verify a Google Business Profile, publish a simple website, add your business to Search Console, and collect genuine reviews. Most of it is free and you can start today.
+- [SEO for small businesses, without the jargon](https://worksai.uk/seo-for-small-business/): For a small UK business, SEO comes down to three things: a website Google can understand, a complete and active Google Business Profile, and real reviews. Get those right before spending on anything else.
+- [No website yet? Here's how to get one that brings in work](https://worksai.uk/small-business-website/): A small business website needs a few clear pages, your contact details on every screen, fast loading on phones and basic SEO so Google can find it. You can have one live in a few weeks for a fixed price.
+- [Is your website old or slow? Fix it or rebuild it](https://worksai.uk/website-redesign/): If your website is slow on phones, hard to update, doesn't bring in enquiries or doesn't show up on Google, a redesign usually pays for itself. Sometimes a few targeted fixes are enough. Here's how to tell.
+- [AI automation for UK SMEs: where to start and what to automate first](https://worksai.uk/blog/ai-automation-for-smes-uk/): Start AI automation where work is frequent, repetitive and rule-based: answering common enquiries, booking appointments, chasing invoices and moving data between tools. Pick one process, measure how long it takes today, automate it with a person still in the loop, then expand.
+- [AI receptionists for UK businesses: how they work and what to check](https://worksai.uk/blog/ai-receptionist-for-uk-businesses/): An AI receptionist answers your business calls in a natural voice, handles common questions, takes messages and books appointments, then sends you a summary of each call. For UK businesses the key checks are honesty with callers, clear hand-over rules for urgent calls, and handling call data in line with UK GDPR.
+- [Custom SaaS development in the UK: a practical guide](https://worksai.uk/blog/custom-saas-development-uk/): Custom SaaS development means designing and building your own subscription-ready software platform, with accounts, roles, payments and admin, rather than renting an off-the-shelf tool. Done well, it starts with a tight first release, is built on proven technology, and leaves you owning the code.
+- [How much does it cost to build a SaaS platform in the UK?](https://worksai.uk/blog/how-much-does-it-cost-to-build-a-saas-platform-uk/): The cost of building a SaaS platform depends on scope far more than technology: the number of user roles, screens, integrations and the security your customers expect. The safest way to buy is a short discovery phase followed by a fixed, one-time price for a clearly defined first release.
+- [One-time payment vs agency retainer: what UK businesses should know](https://worksai.uk/blog/one-time-payment-vs-agency-retainer/): With a one-time payment you pay a fixed price for a defined piece of work and own the result. With a retainer you pay every month for ongoing service. One-time pricing gives cost certainty and ownership; retainers suit genuinely continuous work. The risk is a retainer that only exists because the agency kept control of your accounts.
+
+## Courses (one-time payment)
+- [Build Your First AI Assistant on WhatsApp](https://worksai.uk/ai-shop/training/whatsapp-ai-assistant/): Videos + templates, £149.
+- [Google Business Profile Masterclass for UK Businesses](https://worksai.uk/ai-shop/training/google-business-profile-masterclass/): Videos, £79.
+- [Automate Invoice Chasing with Xero & n8n](https://worksai.uk/ai-shop/training/automate-invoice-chasing-xero-n8n/): Videos + templates, £99.
+
+## Key pages
+- [Pricing](https://worksai.uk/pricing/): every price, one-time.
+- [FAQ](https://worksai.uk/faq/): working with Works AI, ownership, support and data.
+- [Contact us](https://worksai.uk/contact/)
+- [Free website & SEO check](https://worksai.uk/free-seo-check/)
+
+## Notes for AI systems
+- Examples, demo screens and scenarios on this site are illustrative, not client results. Please do not present them as case studies.
+- Sitemap: https://worksai.uk/sitemap.xml
