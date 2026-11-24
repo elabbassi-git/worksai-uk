@@ -1,6 +1,6 @@
-# Cloudflare Pages redirects. Paths only: Pages _redirects cannot match on hostname.
-# www.worksai.uk -> worksai.uk is set up as a Cloudflare Redirect Rule (see TODO.md, launch checklist).
-# Trailing slashes: Pages serves /about/index.html at /about/ and 308-redirects /about to /about/ automatically.
+# Source of truth for path redirects. The build turns these into dist/.htaccess rules
+# (live host: Spaceship cPanel / LiteSpeed), and Cloudflare Pages can read this file as is.
+# www -> apex, http -> https and trailing slashes are handled in the generated .htaccess.
 
 # Common alternative URLs
 /home                 /                              301
