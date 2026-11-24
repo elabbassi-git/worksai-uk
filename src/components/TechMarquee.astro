@@ -1,0 +1,70 @@
+---
+/**
+ * Endless, CSS-only marquee of the technologies we build with and integrate.
+ * Typographic wordmarks (plain names in the site font), not company logos, and an
+ * explicit label so nothing reads as a client claim. Fixed height: zero layout shift.
+ * The list is rendered twice; the copy is aria-hidden and the track moves by -50%.
+ */
+const names = [
+  'OpenAI',
+  'Anthropic',
+  'Google Cloud',
+  'AWS',
+  'Cloudflare',
+  'Stripe',
+  'PostgreSQL',
+  'Supabase',
+  'ElevenLabs',
+  'Twilio',
+  'WhatsApp Business',
+  'HubSpot',
+  'Vercel',
+  'TypeScript',
+];
+---
+
+<section class="tech-marquee border-y border-line/70 bg-paper-2/50" aria-labelledby="tech-marquee-label">
+  <div class="container-x pt-5 text-center">
+    <p id="tech-marquee-label" class="font-mono text-[0.72rem] uppercase tracking-[0.12em] text-ink-3">
+      Technologies we build with and integrate
+    </p>
+  </div>
+  <div class="viewport relative h-16 overflow-hidden">
+    <div class="track flex h-full w-max items-center">
+      {
+        [0, 1].map((copy) => (
+          <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? 'true' : undefined} role="list">
+            {names.map((n) => (
+              <li class="flex items-center">
+                <span class="whitespace-nowrap px-7 font-display text-[1.15rem] font-semibold tracking-[-0.01em] text-ink-3 sm:px-9 sm:text-[1.3rem]">{n}</span>
+                <span class="size-1 shrink-0 rounded-full bg-ink-3/40" aria-hidden="true" />
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+  <p class="sr-only">These are technologies and platforms we use in client builds. They are not clients or partners of Works AI.</p>
+</section>
+
+<style>
+  .viewport {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .track {
+    animation: marquee 55s linear infinite;
+    will-change: transform;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+  }
+</style>

@@ -253,6 +253,16 @@ const actions = [
     .slide {
       zoom: 0.95;
     }
+    /* Scaled-down stage (tablet/phone): pull the floating badges inside the frame so
+       they never touch or cross the screen edge, even mid-float animation. */
+    .float-a {
+      right: 0.75rem;
+      top: -1rem;
+    }
+    .float-b {
+      left: 0.75rem;
+      bottom: -1.25rem;
+    }
   }
   @container showcase (max-width: 580px) {
     .slide {
