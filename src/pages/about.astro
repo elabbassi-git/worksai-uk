@@ -85,8 +85,8 @@ import { site, isSet } from '@/config/site';
 
   <Section id="company" eyebrow="Company details" title="Legal information">
     <dl class="grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-2">
-      <div class="bg-card p-6"><dt class="eyebrow">Legal name</dt><dd class="mt-1 text-lg">{site.legalName}</dd></div>
-      <div class="bg-card p-6"><dt class="eyebrow">Company registration number</dt><dd class="mt-1 text-lg">{site.registrationNumber}</dd></div>
+      {isSet(site.legalName) && <div class="bg-card p-6"><dt class="eyebrow">Legal name</dt><dd class="mt-1 text-lg">{site.legalName}</dd></div>}
+      {isSet(site.registrationNumber) && <div class="bg-card p-6"><dt class="eyebrow">Company registration number</dt><dd class="mt-1 text-lg">{site.registrationNumber}</dd></div>}
       <div class="bg-card p-6"><dt class="eyebrow">Trading name</dt><dd class="mt-1 text-lg">{site.brand}</dd></div>
       <div class="bg-card p-6"><dt class="eyebrow">Contact</dt><dd class="mt-1 text-lg"><a href="/contact/" class="link">Contact page</a> · {site.email}</dd></div>
     </dl>

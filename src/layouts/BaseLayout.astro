@@ -6,7 +6,6 @@ import { fillPrices } from '@/data/pricing';
 import { organization, website, webPage, breadcrumbList, ogPath, type Crumb } from '@/lib/schema';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
-import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import CookieBanner from '@/components/CookieBanner.astro';
 
 interface Props {
@@ -91,7 +90,6 @@ const graph = {
     >
     <Header path={path} />
     <main id="main" class="flex-1">
-      {crumbs && <Breadcrumbs crumbs={crumbs} />}
       <slot />
     </main>
     <Footer path={path} whatsappMessage={whatsappMessage} />

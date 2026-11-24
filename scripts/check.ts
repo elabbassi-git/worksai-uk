@@ -100,7 +100,7 @@ for (const p of pages) {
     if (!r.querySelector('meta[property="og:image"]')) err(p.path, 'missing og:image');
     const og = r.querySelector('meta[property="og:image"]')?.getAttribute('content')?.replace(SITE, '');
     if (og && !(await exists(join(DIST, og)))) err(p.path, `og:image file missing: ${og}`);
-    if (p.path !== '/' && !r.querySelector('nav[aria-label="Breadcrumb"]')) err(p.path, 'missing visible breadcrumbs');
+    if (r.querySelector('nav[aria-label="Breadcrumb"]')) err(p.path, 'visible breadcrumbs are not used (BreadcrumbList JSON-LD only)');
   }
 
   // JSON-LD

@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { site, whatsappLink } from '@/config/site';
+import { site, isSet, whatsappLink } from '@/config/site';
 import { publishedServices, publishedRegistry } from '@/lib/content';
 
 interface Props {
@@ -90,8 +90,7 @@ const year = new Date().getFullYear();
 
     <div class="mt-14 flex flex-col gap-4 border-t border-paper/15 pt-6 text-sm text-paper/65 md:flex-row md:items-center md:justify-between">
       <p>
-        © {year}
-        {site.legalName}, trading as {site.brand}. Company registration no. {site.registrationNumber}.
+        © {year} {site.brand}.{isSet(site.legalName) && ` ${site.legalName}, trading as ${site.brand}.`}{isSet(site.registrationNumber) && ` Company registration no. ${site.registrationNumber}.`}
       </p>
       <ul class="flex flex-wrap items-center gap-x-5 gap-y-2">
         {
